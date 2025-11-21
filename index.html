@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pi-Splay Dashboard</title>
+    <link rel="stylesheet" href="./dist/styles.css">
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-white min-h-screen p-4">
+    <div id="dashboard" class="dashboard-container">
+        <!-- Tiles will be dynamically added here -->
+    </div>
+    <button id="add-tile-btn" class="add-tile-btn" aria-label="Add tile">+</button>
+    <button id="edit-mode-btn" class="edit-mode-btn" aria-label="Edit mode">✏️</button>
+    <div id="tile-modal" class="tile-modal">
+        <div class="tile-modal-content">
+            <div class="tile-modal-header">
+                <h2>Add New Tile</h2>
+                <button class="modal-close-btn" aria-label="Close">×</button>
+            </div>
+            <div class="tile-modal-body">
+                <div class="tile-type-selection" id="tile-type-selection">
+                    <!-- Tile types will be added here -->
+                </div>
+                <div class="tile-config" id="tile-config" style="display: none;">
+                    <!-- Configuration options will be added here -->
+                </div>
+            </div>
+            <div class="tile-modal-footer">
+                <button class="btn-cancel">Cancel</button>
+                <button class="btn-add-tile" id="btn-add-tile" disabled>Add Tile</button>
+            </div>
+        </div>
+    </div>
+    <script src="./dist/main.js"></script>
+</body>
+</html>
+

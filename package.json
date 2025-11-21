@@ -1,0 +1,23 @@
+{
+  "name": "pi-splay",
+  "version": "1.0.0",
+  "description": "Touch-friendly modular dashboard",
+  "scripts": {
+    "build": "npm run build:css && npm run build:js",
+    "build:css": "sass src/styles/main.sass dist/styles-temp.css --no-source-map && tailwindcss -i ./dist/styles-temp.css -o ./dist/styles.css --minify && rm dist/styles-temp.css",
+    "build:js": "esbuild src/main.ts --bundle --format=iife --global-name=PiSplay --outfile=dist/main.js --minify --sourcemap",
+    "build:ts": "tsc",
+    "watch": "npm run watch:css & npm run watch:js",
+    "watch:css": "sass src/styles/main.sass dist/styles-temp.css --watch --no-source-map & tailwindcss -i ./dist/styles-temp.css -o ./dist/styles.css --watch",
+    "watch:js": "esbuild src/main.ts --bundle --format=iife --global-name=PiSplay --outfile=dist/main.js --watch --sourcemap",
+    "watch:ts": "tsc --watch",
+    "dev": "npm run watch"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "esbuild": "^0.27.0",
+    "sass": "^1.69.5",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.3.3"
+  }
+}

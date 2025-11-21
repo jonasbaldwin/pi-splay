@@ -1,0 +1,554 @@
+@tailwind base
+@tailwind components
+@tailwind utilities
+
+@layer base
+  body
+    @apply font-sans
+    -webkit-tap-highlight-color: transparent
+
+@layer components
+  .dashboard-container
+    @apply grid gap-6
+    grid-template-columns: repeat(auto-fill, 500px)
+    grid-auto-rows: min-content
+    @apply justify-center
+    @apply px-4
+    position: relative
+    
+    @media (max-width: 640px)
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr))
+      @apply gap-4
+    
+    .drop-indicator
+      @apply border-2 border-dashed border-blue-500
+      @apply bg-blue-500 bg-opacity-20
+      @apply rounded-lg
+      min-height: 200px
+      pointer-events: none
+      border-radius: 40px
+    
+    .drop-zone
+      @apply border-2 border-dashed border-gray-300 dark:border-gray-600
+      @apply bg-gray-100 dark:bg-gray-800 bg-opacity-20 dark:bg-opacity-20
+      @apply rounded-lg
+      min-height: 200px
+      pointer-events: none
+      transition: all 0.2s ease
+      @apply z-30
+      border-radius: 40px
+      
+      &.drop-zone-hovered
+        @apply border-blue-500
+        @apply bg-blue-500 bg-opacity-30
+
+  .tile
+    @apply bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg
+    @apply transition-all duration-200
+    @apply relative
+    min-height: 200px
+    width: 500px
+    border-radius: 40px
+    
+    &.edit-mode
+      @apply cursor-move
+      user-select: none
+      -webkit-user-drag: element
+      position: relative
+      opacity: 0.7
+      
+      &::before
+        content: ''
+        @apply absolute inset-0
+        @apply bg-white bg-opacity-25
+        @apply rounded-lg
+        pointer-events: none
+        z-index: 1
+        border-radius: 40px
+        animation: pulse-fog 2s ease-in-out infinite
+    
+    &.tile-s
+      grid-column: span 1
+    
+    &.tile-m
+      grid-column: span 2
+    
+    &.tile-l
+      grid-column: span 3
+    
+    @media (max-width: 640px)
+      width: 100%
+      &.tile-m,
+      &.tile-l
+        grid-column: span 1
+    
+    &.dragging
+      @apply opacity-50 cursor-grabbing
+      @apply z-50
+    
+    &.dragover
+      @apply ring-2 ring-blue-500
+    
+    .tile-remove-btn
+      @apply absolute top-2 right-2
+      @apply bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700
+      @apply text-white font-bold
+      @apply w-8 h-8 rounded-full
+      @apply flex items-center justify-center
+      @apply cursor-pointer
+      @apply transition-colors
+      @apply z-10
+      font-size: 1.5rem
+      line-height: 1
+
+  .time-module
+    @apply flex flex-col h-full
+    @apply select-none
+    
+    .time-header
+      @apply flex items-baseline gap-2 mb-4
+      
+      .time-label
+        @apply text-base font-normal
+        @apply text-gray-600 dark:text-gray-300
+      
+      .time-display
+        @apply text-4xl font-mono font-bold
+        @apply text-gray-900 dark:text-white
+    
+    @media (max-width: 640px)
+      .time-header .time-display
+        @apply text-3xl
+    
+    .marks-section
+      @apply mt-4 pt-4 border-t border-gray-700
+      
+      .marks-header
+        @apply flex items-center justify-between mb-3
+        
+        .marks-title
+          @apply text-sm text-gray-400
+          @apply font-normal
+        
+        .marks-clear-btn
+          @apply text-xs bg-gray-700 hover:bg-gray-600
+          @apply text-white px-2 py-1 rounded
+          @apply cursor-pointer
+          @apply transition-colors
+      
+      .marks-list
+        @apply space-y-2
+        max-height: 150px
+        overflow-y: auto
+        
+        .mark-item
+          @apply text-sm font-mono
+          @apply flex items-center gap-2
+          @apply text-gray-300
+          
+          .mark-index
+            @apply text-gray-500 text-xs
+            @apply min-w-[20px]
+          
+          .mark-time
+            @apply text-gray-300
+          
+          .mark-separator
+            @apply text-gray-500 mx-1
+          
+          .mark-epoch
+            @apply text-gray-400
+            @apply flex-1
+          
+          .mark-elapsed
+            @apply text-blue-400
+            @apply min-w-[60px]
+          
+          .mark-remove-btn
+            @apply text-white hover:text-red-300
+            @apply opacity-70 hover:opacity-100
+            @apply transition-opacity
+            @apply cursor-pointer
+            @apply text-lg
+            @apply leading-none
+            @apply px-1
+            @apply font-bold
+        
+        .mark-placeholder
+          @apply text-gray-600 text-sm
+          @apply font-mono
+
+  .epoch-module
+    @apply flex flex-col h-full
+    @apply select-none
+    @apply justify-center
+    
+    .epoch-label
+      @apply text-base font-normal
+      @apply text-gray-600 dark:text-gray-300
+      @apply mb-4
+    
+    .epoch-display
+      @apply text-4xl font-mono font-bold
+      @apply text-gray-900 dark:text-white
+      @apply break-all
+    
+    @media (max-width: 640px)
+      .epoch-display
+        @apply text-3xl
+    
+    .marks-section
+      @apply mt-4 pt-4 border-t border-gray-300 dark:border-gray-700
+      
+      .marks-header
+        @apply flex items-center justify-between mb-3
+        
+        .marks-title
+          @apply text-sm text-gray-500 dark:text-gray-400
+          @apply font-normal
+        
+        .marks-clear-btn
+          @apply text-xs bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600
+          @apply text-gray-800 dark:text-white px-2 py-1 rounded
+          @apply cursor-pointer
+          @apply transition-colors
+      
+      .marks-list
+        @apply space-y-2
+        max-height: 150px
+        overflow-y: auto
+        
+        .mark-item
+          @apply text-sm font-mono
+          @apply flex items-center gap-2
+          @apply text-gray-700 dark:text-gray-300
+          
+          .mark-index
+            @apply text-gray-500 dark:text-gray-500 text-xs
+            @apply min-w-[20px]
+          
+          .mark-time
+            @apply text-gray-700 dark:text-gray-300
+          
+          .mark-separator
+            @apply text-gray-500 mx-1
+          
+          .mark-epoch
+            @apply text-gray-600 dark:text-gray-400
+            @apply flex-1
+          
+          .mark-elapsed
+            @apply text-blue-600 dark:text-blue-400
+            @apply min-w-[60px]
+          
+          .mark-remove-btn
+            @apply text-gray-800 dark:text-white hover:text-red-600 dark:hover:text-red-300
+            @apply opacity-70 hover:opacity-100
+            @apply transition-opacity
+            @apply cursor-pointer
+            @apply text-lg
+            @apply leading-none
+            @apply px-1
+            @apply font-bold
+        
+        .mark-placeholder
+          @apply text-gray-400 dark:text-gray-600 text-sm
+          @apply font-mono
+
+  .date-module
+    @apply flex flex-col h-full
+    @apply select-none
+    @apply justify-center
+    @apply items-center
+    
+    .date-display
+      @apply text-3xl font-bold
+      @apply text-gray-900 dark:text-white
+      @apply text-center
+      @apply font-sans
+    
+    @media (max-width: 640px)
+      .date-display
+        @apply text-2xl
+
+  .calendar-module
+    @apply flex flex-col h-full
+    @apply select-none
+    
+    .calendar-header
+      @apply mb-4
+      @apply relative
+      
+      .calendar-drag-handle
+        @apply absolute top-0 left-0 right-0 h-8
+        @apply cursor-move
+        @apply z-10
+      
+      .calendar-controls
+        @apply flex items-center gap-2 mb-2
+        @apply justify-between
+        @apply relative
+        z-index: 20
+        
+        .btn-nav
+          @apply bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600
+          @apply text-gray-800 dark:text-white font-bold
+          @apply px-3 py-1 rounded
+          @apply cursor-pointer
+          @apply transition-colors
+          @apply relative
+          z-index: 21
+          font-size: 1.5rem
+          line-height: 1
+        
+        .month-year-display
+          @apply flex items-center gap-2
+          @apply flex-1
+          @apply justify-center
+          
+          .month-select,
+          .year-select
+            @apply bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white
+            @apply px-2 py-1 rounded
+            @apply border border-gray-300 dark:border-gray-600
+            @apply cursor-pointer
+            @apply text-sm
+        
+      .calendar-actions
+        @apply flex gap-2
+        @apply justify-end
+        @apply relative
+        z-index: 20
+        
+        .btn-reset-view,
+        .btn-reset-dates
+          @apply text-xs bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600
+          @apply text-gray-800 dark:text-white px-2 py-1 rounded
+          @apply cursor-pointer
+          @apply transition-colors
+          @apply relative
+          z-index: 21
+    
+    .calendar-months
+      @apply grid grid-cols-2 gap-4
+      @apply mb-4
+      
+      @media (max-width: 768px)
+        @apply grid-cols-1
+      
+      .calendar-month-container
+        @apply flex flex-col
+        
+        .calendar-month-header
+          @apply text-sm font-semibold text-gray-700 dark:text-gray-300
+          @apply mb-2
+          @apply text-center
+        
+        .calendar-weekdays
+          @apply grid grid-cols-7 gap-1
+          @apply mb-1
+          
+          .calendar-weekday
+            @apply text-xs text-gray-500 dark:text-gray-400
+            @apply text-center
+            @apply py-1
+        
+        .calendar-days
+          @apply grid grid-cols-7 gap-1
+          
+          .calendar-day
+            @apply aspect-square
+            @apply flex items-center justify-center
+            @apply text-sm
+            @apply cursor-pointer
+            @apply rounded
+            @apply transition-colors
+            @apply text-gray-700 dark:text-gray-300
+            @apply hover:bg-gray-200 dark:hover:bg-gray-700
+            
+            &.empty
+              @apply cursor-default
+              @apply hover:bg-transparent
+            
+            &.today
+              @apply bg-blue-600 text-white
+              @apply font-bold
+            
+            &.selected
+              @apply bg-blue-500 text-white
+              @apply font-semibold
+            
+            &.today.selected
+              @apply bg-blue-700
+    
+    .comparison-display
+      @apply mt-4 pt-4 border-t border-gray-300 dark:border-gray-700
+      max-height: 150px
+      overflow-y: auto
+      
+      .comparison-empty
+        @apply text-sm text-gray-500 dark:text-gray-500
+        @apply text-center
+      
+      .comparison-results
+        @apply space-y-1
+        
+        .comparison-item
+          @apply text-sm text-gray-700 dark:text-gray-300
+          @apply font-mono
+          @apply px-2 py-1 rounded
+          @apply mb-1
+
+  .add-tile-btn
+    @apply fixed bottom-6 right-6
+    @apply bg-blue-600 hover:bg-blue-700
+    @apply text-white font-bold
+    @apply w-16 h-16 rounded-full
+    @apply flex items-center justify-center
+    @apply cursor-pointer
+    @apply transition-colors
+    @apply shadow-lg
+    @apply z-40
+    font-size: 2rem
+  
+  .edit-mode-btn
+    @apply fixed bottom-6 right-28
+    @apply bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-700
+    @apply text-gray-800 dark:text-white font-bold
+    @apply w-16 h-16 rounded-full
+    @apply flex items-center justify-center
+    @apply cursor-pointer
+    @apply transition-colors
+    @apply shadow-lg
+    @apply z-40
+    font-size: 1.5rem
+  
+  .trash-can-btn
+    @apply fixed bottom-6 right-6
+    @apply bg-red-600 hover:bg-red-700
+    @apply text-white font-bold
+    @apply w-16 h-16 rounded-full
+    @apply flex items-center justify-center
+    @apply cursor-pointer
+    @apply transition-all
+    @apply shadow-lg
+    @apply z-40
+    font-size: 2rem
+    transform: scale(1)
+    
+    &.trash-can-hovered
+      @apply bg-red-500
+      transform: scale(1.1)
+    line-height: 1
+
+  .tile-modal
+    @apply fixed inset-0
+    @apply bg-black bg-opacity-50
+    @apply flex items-center justify-center
+    @apply z-50
+    @apply hidden
+    
+    &.active
+      @apply flex
+    
+    .tile-modal-content
+      @apply bg-white dark:bg-gray-800 rounded-lg
+      @apply p-6
+      @apply max-w-md w-full
+      @apply max-h-[90vh] overflow-y-auto
+      @apply shadow-xl
+      
+      .tile-modal-header
+        @apply flex items-center justify-between
+        @apply mb-4
+        
+        h2
+          @apply text-xl font-bold
+          @apply text-gray-900 dark:text-white
+        
+        .modal-close-btn
+          @apply bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600
+          @apply text-gray-800 dark:text-white
+          @apply w-8 h-8 rounded-full
+          @apply flex items-center justify-center
+          @apply cursor-pointer
+          @apply transition-colors
+          font-size: 1.5rem
+          line-height: 1
+      
+      .tile-modal-body
+        @apply mb-4
+        
+        .tile-type-selection
+          @apply grid grid-cols-2 gap-4
+          
+          .tile-type-option
+            @apply bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600
+            @apply p-4 rounded-lg
+            @apply cursor-pointer
+            @apply transition-colors
+            @apply flex flex-col items-center
+            @apply gap-2
+            
+            &.selected
+              @apply bg-blue-600 dark:bg-blue-600
+              @apply ring-2 ring-blue-400
+              @apply text-white
+            
+            .tile-type-icon
+              @apply text-3xl
+            
+            .tile-type-label
+              @apply text-sm font-semibold
+              @apply text-gray-900 dark:text-white
+        
+        .tile-config
+          @apply mt-4
+          @apply pt-4 border-t border-gray-300 dark:border-gray-700
+          
+          .config-section
+            @apply mb-4
+            
+            .config-label
+              @apply block text-sm font-semibold mb-2
+              @apply text-gray-700 dark:text-gray-300
+            
+            .config-select
+              @apply w-full bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white
+              @apply px-3 py-2 rounded
+              @apply border border-gray-300 dark:border-gray-600
+              @apply cursor-pointer
+          
+          .config-info
+            @apply text-sm text-gray-600 dark:text-gray-400
+      
+      .tile-modal-footer
+        @apply flex gap-3
+        @apply justify-end
+        
+        .btn-cancel,
+        .btn-add-tile
+          @apply px-4 py-2 rounded
+          @apply font-semibold
+          @apply transition-colors
+          @apply cursor-pointer
+        
+        .btn-cancel
+          @apply bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600
+          @apply text-gray-800 dark:text-white
+        
+        .btn-add-tile
+          @apply bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700
+          @apply text-white
+          
+          &:disabled
+            @apply bg-gray-300 dark:bg-gray-600
+            @apply cursor-not-allowed
+            @apply opacity-50
+
+@keyframes pulse-fog
+  0%, 100%
+    opacity: 0.25
+  50%
+    opacity: 0.4
+
