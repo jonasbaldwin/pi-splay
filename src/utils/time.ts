@@ -1,8 +1,39 @@
-export function formatTime(date: Date, includeMilliseconds: boolean = false, useUTC: boolean = false): string {
-  const hours = useUTC ? date.getUTCHours() : date.getHours();
+const HOUR_FORMAT_KEY = 'pi-splay-hour-format';
+
+export function getHourFormat(): '12' | '24' {
+  try {
+    const stored = localStorage.getItem(HOUR_FORMAT_KEY);
+    if (stored === '12' || stored === '24') {
+      return stored;
+    }
+  } catch (e) {
+    // Ignore localStorage errors
+  }
+  return '24'; // Default to 24-hour format
+}
+
+export function setHourFormat(format: '12' | '24'): void {
+  try {
+    localStorage.setItem(HOUR_FORMAT_KEY, format);
+  } catch (e) {
+    console.error('Failed to save hour format preference:', e);
+  }
+}
+
+export function formatTime(date: Date, includeMilliseconds: boolean = false, useUTC: boolean = false, use12Hour?: boolean): string {
+  const hourFormat = use12Hour !== undefined ? use12Hour : getHourFormat() === '12';
+  
+  let hours = useUTC ? date.getUTCHours() : date.getHours();
   const minutes = useUTC ? date.getUTCMinutes() : date.getMinutes();
   const seconds = useUTC ? date.getUTCSeconds() : date.getSeconds();
   const ms = useUTC ? date.getUTCMilliseconds() : date.getMilliseconds();
+  
+  let period = '';
+  if (hourFormat) {
+    period = hours >= 12 ? ' PM' : ' AM';
+    hours = hours % 12;
+    if (hours === 0) hours = 12;
+  }
   
   const hoursStr = String(hours).padStart(2, '0');
   const minutesStr = String(minutes).padStart(2, '0');
@@ -10,10 +41,10 @@ export function formatTime(date: Date, includeMilliseconds: boolean = false, use
   
   if (includeMilliseconds) {
     const msStr = String(ms).padStart(4, '0');
-    return `${hoursStr}:${minutesStr}:${secondsStr}.${msStr}`;
+    return `${hoursStr}:${minutesStr}:${secondsStr}.${msStr}${period}`;
   }
   
-  return `${hoursStr}:${minutesStr}:${secondsStr}`;
+  return `${hoursStr}:${minutesStr}:${secondsStr}${period}`;
 }
 
 export function getTimeForTimezone(timezone: string): Date {
@@ -99,13 +130,14 @@ export function formatDetailedElapsedTime(ms: number): string {
  */
 export function formatTimestampForTimezone(timestamp: number, timezone: string): string {
   const date = new Date(timestamp);
+  const use12Hour = getHourFormat() === '12';
   
   if (timezone === 'local') {
     // Use local time
-    return formatTime(date, true, false);
+    return formatTime(date, true, false, use12Hour);
   } else if (timezone === 'utc') {
     // Use UTC time
-    return formatTime(date, true, true);
+    return formatTime(date, true, true, use12Hour);
   } else {
     // IANA timezone - use Intl API to get time components in that timezone
     try {
@@ -114,21 +146,23 @@ export function formatTimestampForTimezone(timestamp: number, timezone: string):
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
-        hour12: false
+        hour12: use12Hour
       });
       const parts = formatter.formatToParts(date);
       const hour = parts.find(p => p.type === 'hour')?.value || '00';
       const minute = parts.find(p => p.type === 'minute')?.value || '00';
       const second = parts.find(p => p.type === 'second')?.value || '00';
+      const period = use12Hour ? (parts.find(p => p.type === 'dayPeriod')?.value || '') : '';
+      const periodStr = period ? ` ${period.toUpperCase()}` : '';
       
       // Milliseconds are the same regardless of timezone (fractional seconds don't change)
       const ms = date.getMilliseconds();
       const msStr = String(ms).padStart(4, '0');
       
-      return `${hour}:${minute}:${second}.${msStr}`;
+      return `${hour}:${minute}:${second}.${msStr}${periodStr}`;
     } catch (e) {
       // Fallback to local time if timezone is invalid
-      return formatTime(date, true, false);
+      return formatTime(date, true, false, use12Hour);
     }
   }
 }

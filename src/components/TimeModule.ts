@@ -1,5 +1,5 @@
 import { TimeTileData, TimeMark } from '../types';
-import { formatTime, getTimeForTimezone, createTimeMark, getTimezoneLabel, formatElapsedTime, formatTimestampForTimezone } from '../utils/time';
+import { formatTime, getTimeForTimezone, createTimeMark, getTimezoneLabel, formatElapsedTime, formatTimestampForTimezone, getHourFormat, setHourFormat } from '../utils/time';
 import { MarkSyncManager } from '../utils/MarkSyncManager';
 import { ClockManager } from '../utils/ClockManager';
 
@@ -49,6 +49,17 @@ export class TimeModule {
     this.updateTime(); // Initial update
     this.clockManager.subscribe(this.clockSubscriber);
     this.syncManager.register(this.syncModuleRef);
+    
+    // Listen for hour format changes from other modules
+    window.addEventListener('hourFormatChanged', () => {
+      this.updateTime();
+      this.updateMarks();
+      const hourFormat = getHourFormat();
+      const formatBtn = this.element.querySelector('[data-format-toggle]') as HTMLElement;
+      if (formatBtn) {
+        formatBtn.textContent = hourFormat === '12' ? '24h' : '12h';
+      }
+    });
   }
   
   public addMark(mark: TimeMark): void {
@@ -82,11 +93,18 @@ export class TimeModule {
   private initialize(): void {
     const timezoneLabel = getTimezoneLabel(this.data.timezone);
     
+    const hourFormat = getHourFormat();
+    const formatLabel = hourFormat === '12' ? '24h' : '12h';
+    
     this.element.innerHTML = `
       <div class="time-module">
         <div class="time-header">
           <span class="time-label">${timezoneLabel}:</span>
           <span class="time-display" data-time-display></span>
+          <div class="time-actions">
+            <button class="time-format-btn" data-format-toggle title="Toggle 12/24 hour format">${formatLabel}</button>
+            <button class="time-copy-btn" data-copy-time title="Copy time">Copy</button>
+          </div>
         </div>
         <div class="marks-section">
           <div class="marks-header">
@@ -107,6 +125,18 @@ export class TimeModule {
     // Add scroll synchronization
     this.marksList.addEventListener('scroll', () => {
       this.syncManager.syncScroll(this.syncModuleRef, this.marksList.scrollTop);
+    });
+    
+    // Add format toggle button handler
+    this.element.querySelector('[data-format-toggle]')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.toggleHourFormat();
+    });
+    
+    // Add copy button handler
+    this.element.querySelector('[data-copy-time]')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.copyTime();
     });
     
     // Add clear button handler
@@ -174,6 +204,25 @@ export class TimeModule {
     const useUTC = this.data.timezone === 'utc';
     this.timeDisplay.textContent = formatTime(date, false, useUTC);
   }
+  
+  private toggleHourFormat(): void {
+    const currentFormat = getHourFormat();
+    const newFormat = currentFormat === '12' ? '24' : '12';
+    setHourFormat(newFormat);
+    
+    // Update button label
+    const formatBtn = this.element.querySelector('[data-format-toggle]') as HTMLElement;
+    if (formatBtn) {
+      formatBtn.textContent = newFormat === '12' ? '24h' : '12h';
+    }
+    
+    // Update all time displays
+    this.updateTime();
+    this.updateMarks();
+    
+    // Notify all other time modules to update (via a custom event)
+    window.dispatchEvent(new CustomEvent('hourFormatChanged'));
+  }
 
   private updateMarks(): void {
     if (this.data.marks.length === 0) {
@@ -238,6 +287,25 @@ export class TimeModule {
     this.syncManager.syncTap(this.syncModuleRef);
   }
 
+  private copyTime(): void {
+    // Get current time with milliseconds
+    const now = Date.now();
+    let timeText: string;
+    
+    if (this.data.timezone === 'local' || this.data.timezone === 'utc') {
+      const date = getTimeForTimezone(this.data.timezone);
+      const useUTC = this.data.timezone === 'utc';
+      const use12Hour = getHourFormat() === '12';
+      timeText = formatTime(date, true, useUTC, use12Hour);
+    } else {
+      // For IANA timezones, use formatTimestampForTimezone which includes milliseconds
+      timeText = formatTimestampForTimezone(now, this.data.timezone);
+    }
+    
+    navigator.clipboard.writeText(timeText).catch(err => {
+      console.error('Failed to copy time:', err);
+    });
+  }
 
   public updateData(data: TimeTileData): void {
     this.data = data;

@@ -6,6 +6,9 @@
   body
     @apply font-sans
     -webkit-tap-highlight-color: transparent
+  
+  button
+    @apply rounded-full
 
 @layer components
   .dashboard-container
@@ -115,6 +118,16 @@
       .time-display
         @apply text-4xl font-mono font-bold
         @apply text-gray-900 dark:text-white
+      
+      .time-actions
+        @apply flex gap-2 ml-auto
+        
+        .time-format-btn,
+        .time-copy-btn
+          @apply text-xs bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600
+          @apply text-gray-800 dark:text-white px-2 py-1 rounded-full
+          @apply cursor-pointer
+          @apply transition-colors
     
     @media (max-width: 640px)
       .time-header .time-display
@@ -132,7 +145,7 @@
         
         .marks-clear-btn
           @apply text-xs bg-gray-700 hover:bg-gray-600
-          @apply text-white px-2 py-1 rounded
+          @apply text-white px-2 py-1 rounded-full
           @apply cursor-pointer
           @apply transition-colors
       
@@ -196,7 +209,7 @@
         .epoch-toggle-btn,
         .epoch-copy-btn
           @apply text-xs bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600
-          @apply text-gray-800 dark:text-white px-2 py-1 rounded
+          @apply text-gray-800 dark:text-white px-2 py-1 rounded-full
           @apply cursor-pointer
           @apply transition-colors
     
@@ -221,7 +234,7 @@
         
         .calculator-clear-btn
           @apply text-xs bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600
-          @apply text-gray-800 dark:text-white px-2 py-1 rounded
+          @apply text-gray-800 dark:text-white px-2 py-1 rounded-full
           @apply cursor-pointer
           @apply transition-colors
       
@@ -346,12 +359,21 @@
     @apply select-none
     @apply justify-center
     @apply items-center
+    @apply relative
     
     .date-display
       @apply text-3xl font-bold
       @apply text-gray-900 dark:text-white
       @apply text-center
       @apply font-sans
+    
+    .date-copy-btn
+      @apply absolute top-2 right-2
+      @apply text-xs bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600
+      @apply text-gray-800 dark:text-white px-2 py-1 rounded-full
+      @apply cursor-pointer
+      @apply transition-colors
+      @apply z-10
     
     @media (max-width: 640px)
       .date-display
@@ -379,7 +401,7 @@
         .btn-nav
           @apply bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600
           @apply text-gray-800 dark:text-white font-bold
-          @apply px-3 py-1 rounded
+          @apply px-3 py-1 rounded-full
           @apply cursor-pointer
           @apply transition-colors
           @apply relative
@@ -409,7 +431,7 @@
         .btn-reset-view,
         .btn-reset-dates
           @apply text-xs bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600
-          @apply text-gray-800 dark:text-white px-2 py-1 rounded
+          @apply text-gray-800 dark:text-white px-2 py-1 rounded-full
           @apply cursor-pointer
           @apply transition-colors
           @apply relative
@@ -614,7 +636,7 @@
         
         .btn-cancel,
         .btn-add-tile
-          @apply px-4 py-2 rounded
+          @apply px-4 py-2 rounded-full
           @apply font-semibold
           @apply transition-colors
           @apply cursor-pointer

@@ -40,11 +40,19 @@ export class DateModule {
   private initialize(): void {
     this.element.innerHTML = `
       <div class="date-module">
+        <button class="date-copy-btn" data-copy-date title="Copy date">Copy</button>
         <div class="date-display" data-date-display></div>
       </div>
     `;
 
     this.dateDisplay = this.element.querySelector('[data-date-display]')!;
+    
+    // Add copy button handler
+    this.element.querySelector('[data-copy-date]')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.copyDate();
+    });
+    
     this.updateDate();
   }
 
@@ -59,6 +67,13 @@ export class DateModule {
     const dateStr = `${day} ${month} ${year}`;
     this.dateDisplay.textContent = dateStr;
     this.lastDisplayedDate = dateStr;
+  }
+
+  private copyDate(): void {
+    const dateText = this.dateDisplay.textContent || '';
+    navigator.clipboard.writeText(dateText).catch(err => {
+      console.error('Failed to copy date:', err);
+    });
   }
 
   public updateData(data: DateTileData): void {

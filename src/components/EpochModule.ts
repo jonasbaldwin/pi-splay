@@ -41,7 +41,7 @@ export class EpochModule {
         <div class="epoch-header">
           <div class="epoch-label">Epoch:</div>
           <div class="epoch-actions">
-            <button class="epoch-toggle-btn" data-toggle-epoch title="Toggle between seconds and milliseconds">Show Milliseconds</button>
+            <button class="epoch-toggle-btn" data-toggle-epoch title="Toggle between seconds and milliseconds">Milliseconds</button>
             <button class="epoch-copy-btn" data-copy-epoch title="Copy epoch number">Copy</button>
           </div>
         </div>
@@ -233,7 +233,7 @@ export class EpochModule {
     this.showMilliseconds = !this.showMilliseconds;
     const toggleBtn = this.element.querySelector('[data-toggle-epoch]') as HTMLElement;
     if (toggleBtn) {
-      toggleBtn.textContent = this.showMilliseconds ? 'Show Seconds' : 'Show Milliseconds';
+      toggleBtn.textContent = this.showMilliseconds ? 'Seconds' : 'Milliseconds';
     }
     
     // Save the converted values
