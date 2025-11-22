@@ -1,12 +1,13 @@
-import { Tile, TileSize, TimeTileData, EpochTileData, CalendarTileData, DateTileData, TimezoneConverterTileData, MapTileData, TimeMark } from '../types';
+import { Tile, TileSize, TimeTileData, EpochTileData, CalendarTileData, DateTileData, TimezoneConverterTileData, MapTileData, FormatHelperTileData, TimeMark } from '../types';
 import { TimeModule } from './TimeModule';
 import { EpochModule } from './EpochModule';
 import { CalendarModule } from './CalendarModule';
 import { DateModule } from './DateModule';
 import { TimezoneConverterModule } from './TimezoneConverterModule';
 import { MapModule } from './MapModule';
+import { FormatHelperModule } from './FormatHelperModule';
 
-type ModuleInstance = TimeModule | EpochModule | CalendarModule | DateModule | TimezoneConverterModule | MapModule | null;
+type ModuleInstance = TimeModule | EpochModule | CalendarModule | DateModule | TimezoneConverterModule | MapModule | FormatHelperModule | null;
 
 export class TileManager {
   private container: HTMLElement;
@@ -262,6 +263,8 @@ export class TileManager {
           (tileData.module as TimezoneConverterModule).updateData(updates.data as TimezoneConverterTileData);
         } else if (updatedTile.type === 'map') {
           (tileData.module as MapModule).updateData(updates.data as MapTileData);
+        } else if (updatedTile.type === 'format-helper') {
+          (tileData.module as FormatHelperModule).updateData(updates.data as FormatHelperTileData);
         }
       }
       this.saveToStorage();
@@ -326,6 +329,8 @@ export class TileManager {
       return new TimezoneConverterModule(element, tile.data as TimezoneConverterTileData);
     } else if (tile.type === 'map') {
       return new MapModule(element, tile.data as MapTileData);
+    } else if (tile.type === 'format-helper') {
+      return new FormatHelperModule(element, tile.data as FormatHelperTileData);
     }
     return null;
   }

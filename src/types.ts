@@ -8,9 +8,9 @@ export interface TimeMark {
 
 export interface Tile {
   id: string;
-  type: 'time' | 'epoch' | 'calendar' | 'date' | 'timezone-converter' | 'map';
+  type: 'time' | 'epoch' | 'calendar' | 'date' | 'timezone-converter' | 'map' | 'format-helper';
   size: TileSize;
-  data: TimeTileData | EpochTileData | CalendarTileData | DateTileData | TimezoneConverterTileData | MapTileData;
+  data: TimeTileData | EpochTileData | CalendarTileData | DateTileData | TimezoneConverterTileData | MapTileData | FormatHelperTileData;
   gridPosition?: { x: number; y: number }; // Grid position for drag and drop
 }
 
@@ -48,5 +48,9 @@ export interface MapTileData {
   longitude?: number;
   locationName?: string;
   zoom?: number;
+}
+
+export interface FormatHelperTileData {
+  selectedLanguage?: string; // Language identifier (e.g., 'javascript', 'python')
 }
 

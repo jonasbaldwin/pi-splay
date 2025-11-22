@@ -383,6 +383,94 @@
       .date-display
         @apply text-2xl
 
+  .format-helper-module
+    @apply flex flex-col h-full
+    @apply select-none
+    
+    .format-helper-header
+      @apply mb-4
+      
+      .format-helper-title
+        @apply text-lg font-semibold
+        @apply text-gray-900 dark:text-white
+    
+    .format-helper-inputs
+      @apply flex gap-3 mb-4
+      
+      .format-input-group
+        @apply flex flex-col gap-1
+        @apply flex-1
+        
+        label
+          @apply text-sm font-medium
+          @apply text-gray-700 dark:text-gray-300
+        
+        .format-input
+          @apply w-full
+          @apply bg-gray-100 dark:bg-gray-700
+          @apply text-gray-900 dark:text-white
+          @apply px-3 py-2 rounded-lg
+          @apply border border-gray-300 dark:border-gray-600
+          @apply text-sm
+          @apply focus:outline-none focus:ring-2 focus:ring-blue-500
+          @apply transition-colors
+    
+    .format-helper-controls
+      @apply mb-4
+      
+      .format-control-group
+        @apply flex flex-col gap-1
+        
+        label
+          @apply text-sm font-medium
+          @apply text-gray-700 dark:text-gray-300
+        
+        .format-select
+          @apply w-full
+          @apply bg-gray-100 dark:bg-gray-700
+          @apply text-gray-900 dark:text-white
+          @apply px-3 py-2 rounded-lg
+          @apply border border-gray-300 dark:border-gray-600
+          @apply text-sm
+          @apply focus:outline-none focus:ring-2 focus:ring-blue-500
+          @apply transition-colors
+          @apply cursor-pointer
+    
+    .format-list
+      @apply space-y-2
+      max-height: 300px
+      overflow-y: auto
+      
+      .format-placeholder
+        @apply text-sm text-gray-500 dark:text-gray-400
+        @apply italic
+        @apply text-center
+        @apply py-4
+      
+      .format-item
+        @apply bg-gray-50 dark:bg-gray-700
+        @apply rounded-lg
+        @apply p-3
+        @apply border border-gray-200 dark:border-gray-600
+        
+        .format-name
+          @apply text-sm font-semibold
+          @apply text-gray-900 dark:text-white
+          @apply mb-1
+        
+        .format-code
+          @apply text-xs font-mono
+          @apply text-blue-600 dark:text-blue-400
+          @apply bg-gray-100 dark:bg-gray-800
+          @apply px-2 py-1 rounded
+          @apply mb-1
+          @apply break-all
+        
+        .format-example
+          @apply text-xs
+          @apply text-gray-600 dark:text-gray-400
+          @apply italic
+
   .timezone-converter-module
     @apply flex flex-col h-full
     @apply select-none

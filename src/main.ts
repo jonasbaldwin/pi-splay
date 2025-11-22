@@ -98,7 +98,8 @@ function initializeAddTileModal(tileManager: TileManager): void {
     { type: 'calendar', label: 'Calendar', icon: '📅' },
     { type: 'date', label: 'Date', icon: '📆' },
     { type: 'timezone-converter', label: 'Timezone Converter', icon: '🌍' },
-    { type: 'map', label: 'World Map', icon: '🗺️' }
+    { type: 'map', label: 'World Map', icon: '🗺️' },
+    { type: 'format-helper', label: 'Date Formatter', icon: '📝' }
   ];
   
   // Populate tile type selection
@@ -183,6 +184,9 @@ function initializeAddTileModal(tileManager: TileManager): void {
     } else if (type === 'map') {
       configHtml = '<p class="config-info">World map tile - tap to get coordinates, search locations, or enter coordinates.</p>';
       selectedConfig = {};
+    } else if (type === 'format-helper') {
+      configHtml = '<p class="config-info">Format helper shows date/time formatting options for different programming languages.</p>';
+      selectedConfig = { selectedLanguage: 'javascript' };
     }
     
     tileConfig.innerHTML = configHtml;
