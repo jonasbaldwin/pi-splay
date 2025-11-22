@@ -1087,7 +1087,7 @@
           @apply bg-white dark:bg-gray-800
 
   .edit-mode-btn
-    @apply fixed bottom-6 right-6
+    @apply fixed bottom-24 right-6
     @apply bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-700
     @apply text-gray-800 dark:text-white font-bold
     @apply w-16 h-16 rounded-full
@@ -1097,9 +1097,12 @@
     @apply shadow-lg
     @apply z-40
     font-size: 1.5rem
+    
+    @media (max-width: 640px)
+      @apply bottom-32
   
   .edit-mode-note
-    @apply fixed bottom-6 left-1/2 transform -translate-x-1/2
+    @apply fixed bottom-24 left-1/2 transform -translate-x-1/2
     @apply bg-gray-800 dark:bg-gray-700
     @apply text-white
     @apply px-4 py-2 rounded-full
@@ -1108,6 +1111,9 @@
     @apply z-40
     @apply transition-opacity
     pointer-events: none
+    
+    @media (max-width: 640px)
+      @apply bottom-32
   
   .tile-modal
     @apply fixed inset-0
@@ -1213,6 +1219,104 @@
             @apply bg-gray-300 dark:bg-gray-600
             @apply cursor-not-allowed
             @apply opacity-50
+
+  .tab-bar
+    @apply fixed bottom-0 left-0 right-0
+    @apply bg-white dark:bg-gray-800
+    @apply border-t border-gray-300 dark:border-gray-700
+    @apply px-4 py-2
+    @apply z-50
+    @apply shadow-lg
+    max-height: 80px
+    overflow-x: auto
+    overflow-y: hidden
+    
+    .tabs-container
+      @apply flex items-center justify-center gap-2
+      @apply h-full
+      
+      .tab-item
+        @apply flex items-center gap-2
+        @apply px-4 py-2
+        @apply rounded-lg
+        @apply bg-gray-100 dark:bg-gray-700
+        @apply text-gray-700 dark:text-gray-300
+        @apply cursor-pointer
+        @apply transition-colors
+        @apply whitespace-nowrap
+        @apply flex-shrink-0
+        min-width: 100px
+        
+        &:hover
+          @apply bg-gray-200 dark:bg-gray-600
+        
+        &.active
+          @apply bg-blue-600 dark:bg-blue-600
+          @apply text-white
+          
+          .tab-rename-btn
+            @apply text-white
+            @apply hover:bg-blue-700 dark:hover:bg-blue-500
+        
+        .tab-name
+          @apply flex-1
+          @apply text-sm font-medium
+          @apply select-none
+          user-select: none
+          -webkit-user-select: none
+        
+        .tab-name-input
+          @apply flex-1
+          @apply text-sm font-medium
+          @apply bg-transparent
+          @apply border-2 border-blue-500
+          @apply rounded
+          @apply px-2 py-1
+          @apply outline-none
+          @apply text-inherit
+          min-width: 60px
+          max-width: 200px
+        
+        .tab-rename-btn,
+        .tab-delete-btn
+          @apply w-5 h-5
+          @apply rounded-full
+          @apply flex items-center justify-center
+          @apply text-xs
+          @apply transition-colors
+          @apply opacity-70 hover:opacity-100
+          @apply flex-shrink-0
+          font-size: 0.875rem
+          line-height: 1
+          padding: 0
+          border: none
+          background: transparent
+          cursor: pointer
+          
+        .tab-rename-btn
+          @apply text-gray-600 dark:text-gray-400
+          @apply hover:bg-gray-300 dark:hover:bg-gray-600
+          
+        .tab-delete-btn
+          @apply text-red-600 dark:text-red-400
+          @apply hover:bg-red-100 dark:hover:bg-red-900
+          @apply hover:text-red-700 dark:hover:text-red-300
+      
+      .tab-add-btn
+        @apply w-8 h-8
+        @apply rounded-full
+        @apply bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500
+        @apply text-white
+        @apply font-bold
+        @apply flex items-center justify-center
+        @apply cursor-pointer
+        @apply transition-colors
+        @apply flex-shrink-0
+        @apply shadow-md
+        font-size: 1.25rem
+        line-height: 1
+        border: none
+        padding: 0
 
 @keyframes pulse-fog
   0%, 100%

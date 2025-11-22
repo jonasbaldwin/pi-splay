@@ -1,4 +1,5 @@
 import { TileManager } from './components/TileManager';
+import { TabManager } from './components/TabManager';
 import { Tile } from './types';
 
 function generateId(): string {
@@ -7,12 +8,18 @@ function generateId(): string {
 
 function initializeDashboard(): void {
   const container = document.getElementById('dashboard');
+  const tabBar = document.getElementById('tab-bar');
   if (!container) {
     console.error('Dashboard container not found');
     return;
   }
+  if (!tabBar) {
+    console.error('Tab bar not found');
+    return;
+  }
 
   const tileManager = new TileManager(container);
+  const tabManager = new TabManager(tabBar);
 
   // Initialize with default tiles: local time, UTC time, epoch time, and calendar
   const today = new Date();
@@ -61,20 +68,50 @@ function initializeDashboard(): void {
     }
   ];
 
-  // Try to load from localStorage, otherwise use defaults
-  const savedTiles = tileManager.loadFromStorage();
-  if (savedTiles && savedTiles.length > 0) {
-    savedTiles.forEach(tile => {
-      tileManager.addTile(tile);
-    });
-  } else {
-    defaultTiles.forEach(tile => {
-      tileManager.addTile(tile);
-    });
+  // Set up callbacks
+  tileManager.setOnTilesChange((tiles) => {
+    const activeTabId = tabManager.getActiveTabId();
+    if (activeTabId) {
+      tabManager.setTilesForActiveTab(tiles);
+    }
+  });
+
+  tabManager.setOnTabChange((tabId) => {
+    const activeTab = tabManager.getActiveTab();
+    if (activeTab) {
+      tileManager.loadTiles(activeTab.tiles);
+    }
+  });
+
+  tabManager.setOnTilesChange((tabId, tiles) => {
+    // When tiles change in a tab, update the tile manager if it's the active tab
+    if (tabId === tabManager.getActiveTabId()) {
+      tileManager.loadTiles(tiles);
+    }
+  });
+
+  // Load tiles for the active tab
+  const activeTab = tabManager.getActiveTab();
+  if (activeTab) {
+    if (activeTab.tiles.length > 0) {
+      tileManager.loadTiles(activeTab.tiles);
+    } else if (activeTab.name === 'default' && tabManager.getAllTabs().length === 1) {
+      // Only add default tiles to the first "default" tab if it's empty and it's the only tab
+      // This handles the case of a fresh install or migration
+      defaultTiles.forEach(tile => {
+        tileManager.addTile(tile, false);
+      });
+      // Save the default tiles to the tab
+      tabManager.setTilesForActiveTab(tileManager.getAllTiles());
+    } else {
+      // Empty tab, just load empty array
+      tileManager.loadTiles([]);
+    }
   }
 
-  // Store tile manager in window for potential future extensions
+  // Store managers in window for potential future extensions
   (window as any).tileManager = tileManager;
+  (window as any).tabManager = tabManager;
   
   // Initialize add tile functionality
   initializeAddTileModal(tileManager);

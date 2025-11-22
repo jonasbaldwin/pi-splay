@@ -68,3 +68,9 @@ export interface NumberConverterTileData {
   value?: number; // Stored decimal value
 }
 
+export interface Tab {
+  id: string;
+  name: string;
+  tiles: Tile[];
+}
+

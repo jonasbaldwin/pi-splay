@@ -24,6 +24,7 @@ export class TileManager {
   private mouseStartX: number = 0;
   private isMouseDragging: boolean = false;
   private justFinishedDrag: boolean = false;
+  private onTilesChangeCallback: ((tiles: Tile[]) => void) | null = null;
 
   constructor(container: HTMLElement) {
     this.container = container;
@@ -33,6 +34,26 @@ export class TileManager {
     this.initializeMouseDragAndDrop();
     this.initializeTouchDragAndDrop();
     this.initializeEditMode();
+  }
+
+  public setOnTilesChange(callback: (tiles: Tile[]) => void): void {
+    this.onTilesChangeCallback = callback;
+  }
+
+  public loadTiles(tiles: Tile[]): void {
+    // Clear existing tiles
+    this.tiles.forEach((tileData) => {
+      if (tileData.module) {
+        tileData.module.destroy();
+      }
+    });
+    this.tiles.clear();
+    this.container.innerHTML = '';
+
+    // Load new tiles
+    tiles.forEach(tile => {
+      this.addTile(tile, false); // Don't save to storage, we'll do it after all tiles are loaded
+    });
   }
   
   private initializeEditMode(): void {
@@ -146,7 +167,7 @@ export class TileManager {
     return this.isEditMode;
   }
   
-  public addTile(tile: Tile): void {
+  public addTile(tile: Tile, saveToStorage: boolean = true): void {
     // Migrate old tile sizes to 's' (double-wide feature was removed)
     // Handle legacy tiles from localStorage that might have 'm' or 'l'
     const tileSize = tile.size as string;
@@ -205,7 +226,10 @@ export class TileManager {
     
     this.tiles.set(tile.id, { tile, module });
     this.container.appendChild(tileElement);
-    this.saveToStorage();
+    
+    if (saveToStorage) {
+      this.saveToStorage();
+    }
     
     // Refresh drop zones if in edit mode
     if (this.isEditMode) {
@@ -244,6 +268,9 @@ export class TileManager {
       }
       this.tiles.delete(id);
       this.saveToStorage();
+      if (this.onTilesChangeCallback) {
+        this.onTilesChangeCallback(this.getAllTiles());
+      }
     }
   }
 
@@ -283,6 +310,9 @@ export class TileManager {
         }
       }
       this.saveToStorage();
+      if (this.onTilesChangeCallback) {
+        this.onTilesChangeCallback(this.getAllTiles());
+      }
     }
   }
 
@@ -699,6 +729,9 @@ export class TileManager {
           // Update tile data
           tileData.tile.gridPosition = { x: gridPos.col, y: gridPos.row };
           this.saveToStorage();
+          if (this.onTilesChangeCallback) {
+            this.onTilesChangeCallback(this.getAllTiles());
+          }
         }
       }
     }
@@ -722,23 +755,9 @@ export class TileManager {
 
   public saveToStorage(): void {
     const tiles = this.getAllTiles();
-    try {
-      localStorage.setItem('pi-splay-tiles', JSON.stringify(tiles));
-    } catch (e) {
-      console.error('Failed to save tiles to localStorage:', e);
+    if (this.onTilesChangeCallback) {
+      this.onTilesChangeCallback(tiles);
     }
-  }
-
-  public loadFromStorage(): Tile[] | null {
-    try {
-      const stored = localStorage.getItem('pi-splay-tiles');
-      if (stored) {
-        return JSON.parse(stored) as Tile[];
-      }
-    } catch (e) {
-      console.error('Failed to load tiles from localStorage:', e);
-    }
-    return null;
   }
 
   private initializeMouseDragAndDrop(): void {
@@ -865,6 +884,9 @@ export class TileManager {
               // Update tile data
               tileData.tile.gridPosition = { x: gridPos.col, y: gridPos.row };
               this.saveToStorage();
+              if (this.onTilesChangeCallback) {
+                this.onTilesChangeCallback(this.getAllTiles());
+              }
             }
           }
         }
@@ -980,6 +1002,9 @@ export class TileManager {
             // Update tile data
             tileData.tile.gridPosition = { x: gridPos.col, y: gridPos.row };
             this.saveToStorage();
+            if (this.onTilesChangeCallback) {
+              this.onTilesChangeCallback(this.getAllTiles());
+            }
           }
         }
       }
