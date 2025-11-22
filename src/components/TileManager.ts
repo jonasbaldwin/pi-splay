@@ -418,24 +418,28 @@ export class TileManager {
   }
 
   private createModule(tile: Tile, element: HTMLElement): ModuleInstance {
-    if (tile.type === 'time') {
-      return new TimeModule(element, tile.data as TimeTileData);
-    } else if (tile.type === 'epoch') {
-      return new EpochModule(element, tile.data as EpochTileData);
-    } else if (tile.type === 'calendar') {
-      return new CalendarModule(element, tile.data as CalendarTileData);
-    } else if (tile.type === 'date') {
-      return new DateModule(element, tile.data as DateTileData);
-    } else if (tile.type === 'timezone-converter') {
-      return new TimezoneConverterModule(element, tile.data as TimezoneConverterTileData);
-    } else if (tile.type === 'map') {
-      return new MapModule(element, tile.data as MapTileData);
-    } else if (tile.type === 'format-helper') {
-      return new FormatHelperModule(element, tile.data as FormatHelperTileData);
-    } else if (tile.type === 'quick-notes') {
-      return new QuickNotesModule(element, tile.data as QuickNotesTileData);
-    } else if (tile.type === 'number-converter') {
-      return new NumberConverterModule(element, tile.data as NumberConverterTileData);
+    try {
+      if (tile.type === 'time') {
+        return new TimeModule(element, tile.data as TimeTileData);
+      } else if (tile.type === 'epoch') {
+        return new EpochModule(element, tile.data as EpochTileData);
+      } else if (tile.type === 'calendar') {
+        return new CalendarModule(element, tile.data as CalendarTileData);
+      } else if (tile.type === 'date') {
+        return new DateModule(element, tile.data as DateTileData);
+      } else if (tile.type === 'timezone-converter') {
+        return new TimezoneConverterModule(element, tile.data as TimezoneConverterTileData);
+      } else if (tile.type === 'map') {
+        return new MapModule(element, tile.data as MapTileData);
+      } else if (tile.type === 'format-helper') {
+        return new FormatHelperModule(element, tile.data as FormatHelperTileData);
+      } else if (tile.type === 'quick-notes') {
+        return new QuickNotesModule(element, tile.data as QuickNotesTileData);
+      } else if (tile.type === 'number-converter') {
+        return new NumberConverterModule(element, tile.data as NumberConverterTileData);
+      }
+    } catch (err) {
+      console.error(`Failed to create module for tile type ${tile.type}:`, err);
     }
     return null;
   }

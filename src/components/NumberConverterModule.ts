@@ -11,7 +11,8 @@ export class NumberConverterModule {
 
   constructor(element: HTMLElement, data: NumberConverterTileData) {
     this.element = element;
-    this.data = data;
+    // Ensure data is always a valid object
+    this.data = data || {};
     this.initialize();
   }
 
@@ -102,18 +103,22 @@ export class NumberConverterModule {
     // Add copy button handlers
     this.element.querySelector('[data-copy-decimal]')?.addEventListener('click', (e) => {
       e.stopPropagation();
+      e.preventDefault();
       this.copyDecimal();
     });
     this.element.querySelector('[data-copy-binary]')?.addEventListener('click', (e) => {
       e.stopPropagation();
+      e.preventDefault();
       this.copyBinary();
     });
     this.element.querySelector('[data-copy-hex]')?.addEventListener('click', (e) => {
       e.stopPropagation();
+      e.preventDefault();
       this.copyHex();
     });
     this.element.querySelector('[data-copy-octal]')?.addEventListener('click', (e) => {
       e.stopPropagation();
+      e.preventDefault();
       this.copyOctal();
     });
 
@@ -272,38 +277,54 @@ export class NumberConverterModule {
   }
 
   private copyDecimal(): void {
-    const value = this.decimalInput.value;
-    if (value) {
-      navigator.clipboard.writeText(value).catch(err => {
-        console.error('Failed to copy decimal:', err);
-      });
+    try {
+      const value = this.decimalInput.value;
+      if (value) {
+        navigator.clipboard.writeText(value).catch(err => {
+          console.error('Failed to copy decimal:', err);
+        });
+      }
+    } catch (err) {
+      console.error('Error in copyDecimal:', err);
     }
   }
 
   private copyBinary(): void {
-    const value = this.binaryInput.value;
-    if (value) {
-      navigator.clipboard.writeText(`0b${value}`).catch(err => {
-        console.error('Failed to copy binary:', err);
-      });
+    try {
+      const value = this.binaryInput.value;
+      if (value) {
+        navigator.clipboard.writeText(`0b${value}`).catch(err => {
+          console.error('Failed to copy binary:', err);
+        });
+      }
+    } catch (err) {
+      console.error('Error in copyBinary:', err);
     }
   }
 
   private copyHex(): void {
-    const value = this.hexInput.value;
-    if (value) {
-      navigator.clipboard.writeText(`0x${value}`).catch(err => {
-        console.error('Failed to copy hex:', err);
-      });
+    try {
+      const value = this.hexInput.value;
+      if (value) {
+        navigator.clipboard.writeText(`0x${value}`).catch(err => {
+          console.error('Failed to copy hex:', err);
+        });
+      }
+    } catch (err) {
+      console.error('Error in copyHex:', err);
     }
   }
 
   private copyOctal(): void {
-    const value = this.octalInput.value;
-    if (value) {
-      navigator.clipboard.writeText(`0o${value}`).catch(err => {
-        console.error('Failed to copy octal:', err);
-      });
+    try {
+      const value = this.octalInput.value;
+      if (value) {
+        navigator.clipboard.writeText(`0o${value}`).catch(err => {
+          console.error('Failed to copy octal:', err);
+        });
+      }
+    } catch (err) {
+      console.error('Error in copyOctal:', err);
     }
   }
 
