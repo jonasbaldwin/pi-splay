@@ -113,8 +113,20 @@ function initializeDashboard(): void {
 
   tabManager.setOnTilesChange((tabId, tiles) => {
     // When tiles change in a tab, update the tile manager if it's the active tab
+    // Only reload if this is a different tab or if tiles actually changed
+    // (avoid circular updates when we're the one that triggered the change)
     if (tabId === tabManager.getActiveTabId()) {
-      tileManager.loadTiles(tiles);
+      const currentTiles = tileManager.getAllTiles();
+      // Compare tile IDs to see if they're actually different
+      const currentIds = new Set(currentTiles.map(t => t.id));
+      const newIds = new Set(tiles.map(t => t.id));
+      const tilesChanged = currentIds.size !== newIds.size || 
+        Array.from(currentIds).some(id => !newIds.has(id)) ||
+        Array.from(newIds).some(id => !currentIds.has(id));
+      
+      if (tilesChanged) {
+        tileManager.loadTiles(tiles);
+      }
     }
   });
 

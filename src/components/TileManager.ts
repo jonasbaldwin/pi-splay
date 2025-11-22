@@ -273,8 +273,11 @@ export class TileManager {
       tileElement.style.gridColumn = `${tile.gridPosition.x + 1} / span 1`;
       tileElement.style.gridRow = `${tile.gridPosition.y + 1}`;
     } else {
-      // Even without explicit position, ensure span is 1
-      tileElement.style.gridColumn = 'span 1';
+      // Find next available position and set it
+      const nextPos = this.getNextAvailablePosition();
+      tile.gridPosition = nextPos;
+      tileElement.style.gridColumn = `${nextPos.x + 1} / span 1`;
+      tileElement.style.gridRow = `${nextPos.y + 1}`;
     }
     
     this.tiles.set(tile.id, { tile, module });
@@ -752,6 +755,37 @@ export class TileManager {
     return null;
   }
 
+  private getNextAvailablePosition(): { x: number; y: number } {
+    // Calculate occupied positions
+    const occupied = new Set<string>();
+    this.tiles.forEach((tileData, id) => {
+      const tile = tileData.tile;
+      const gridPos = tile.gridPosition || this.getCurrentGridPosition(id);
+      if (gridPos) {
+        occupied.add(`${gridPos.x},${gridPos.y}`);
+      }
+    });
+    
+    // Calculate max cols based on container width
+    const gridGap = 24;
+    const tileWidth = 500;
+    const containerRect = this.container.getBoundingClientRect();
+    const maxCols = Math.max(3, Math.ceil((containerRect.width - 32) / (tileWidth + gridGap)));
+    
+    // Find first available position, scanning row by row
+    for (let row = 0; row < 100; row++) { // Limit to 100 rows
+      for (let col = 0; col < maxCols; col++) {
+        const key = `${col},${row}`;
+        if (!occupied.has(key)) {
+          return { x: col, y: row };
+        }
+      }
+    }
+    
+    // Fallback: return position at end
+    return { x: 0, y: 100 };
+  }
+
   private handleDragLeave(e: DragEvent): void {
     // Only hide indicator if leaving the container entirely
     const relatedTarget = e.relatedTarget as HTMLElement;
@@ -804,7 +838,19 @@ export class TileManager {
   }
 
   public getAllTiles(): Tile[] {
-    return Array.from(this.tiles.values()).map(t => t.tile);
+    // Sync grid positions from DOM before returning
+    // This ensures tiles without explicit positions (auto-placed by browser) are saved correctly
+    // DOM is the source of truth, especially after drag operations
+    return Array.from(this.tiles.values()).map(tileData => {
+      // Try to sync position from DOM (most accurate, especially after drag)
+      const currentPos = this.getCurrentGridPosition(tileData.tile.id);
+      if (currentPos) {
+        tileData.tile.gridPosition = currentPos;
+      }
+      // If we can't read from DOM but tile has a position, keep it
+      // (This handles cases where DOM might not be ready yet, but position was set)
+      return tileData.tile;
+    });
   }
 
   public saveToStorage(): void {

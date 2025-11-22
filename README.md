@@ -2,14 +2,83 @@
 
 Pi-splay is a touch-friendly modular dashboard built with HTML, TypeScript, Tailwind CSS, and SASS. It features customizable tiles that can be rearranged and edited, with a focus on time tracking and development tools.
 
+![Preview](src/img/preview.png)
+
 ## Features
 
 - **Modular Tile System**: Drag-and-drop tiles that can be rearranged on the dashboard
-- **Time Modules**: Display time in 24-hour format (HH:MM:SS) for both local and UTC timezones
-- **Time Marking**: Tap any time module to record the exact moment with epoch timestamp and millisecond precision
 - **Touch-Friendly**: Optimized for touch devices with responsive design
 - **Responsive Layout**: Works seamlessly on both large and small screens
-- **Flexible Tile Sizing**: Three size options (small=500px, medium=1000px, large=1500px)
+- **Module Library**: Several modules to create your custom dashboard.
+
+## Available Modules
+
+- **Time Module**: Displays the current time in a specified timezone (local, UTC, or IANA timezone). Features include:
+  - Toggle between 12-hour and 24-hour format (synchronized across all time modules)
+  - Create time marks by tapping/clicking (shows exact time with milliseconds timestamp)
+  - Copy current time to clipboard
+  - View elapsed time since each mark
+  - Marks are synchronized across all time modules
+  - Supports unlimited marks with scrolling
+
+- **Date Module**: Displays the current date in a readable format (e.g., "15 January 2024"). Features include:
+  - Copy date to clipboard
+  - Automatically updates when the date changes
+
+- **Calendar Module**: Interactive calendar for date selection and comparison. Features include:
+  - Navigate between months and years
+  - Select multiple dates (each with a unique color)
+  - View date comparisons (days between selected dates and from today)
+  - Shows two months side-by-side
+  - Clear all selected dates
+
+- **Epoch Module**: Displays and calculates with Unix epoch timestamps. Features include:
+  - Toggle between seconds and milliseconds display
+  - Real-time epoch timestamp display
+  - Calculator with two inputs (A and B) to compare timestamps
+  - Visual timeline scale showing the relationship between timestamps
+  - Color-coded timeline (green→red for past, red→purple for future)
+  - Detailed elapsed time breakdown between timestamps
+  - Copy epoch value to clipboard
+
+- **Number Converter Module**: Converts numbers between different number systems. Features include:
+  - Convert between decimal, binary (0b), hexadecimal (0x), and octal (0o)
+  - Real-time conversion as you type
+  - Copy values in any format to clipboard
+  - Supports negative numbers
+
+- **Timezone Converter Module**: Converts dates and times between different timezones. Features include:
+  - Set source timezone (local, UTC, or IANA timezone)
+  - Add multiple target timezones for comparison
+  - Optional date and time inputs (defaults to current time)
+  - Shows DST (Daylight Saving Time) indicators
+  - Displays converted times in all target timezones
+  - Remove individual timezones from the list
+
+- **Format Helper Module**: Reference guide for date/time formatting in various programming languages. Features include:
+  - Format examples for JavaScript, Python, Java, Clojure, C, Go, Rust, PHP, Bash, Zsh, and Fish
+  - Set custom date and time to see formatted examples
+  - Shows format code and example output for each format
+  - Includes ISO formats, timestamps, and component extraction
+
+- **Map Module**: Interactive map for location viewing and coordinate management. Features include:
+  - Search locations by name (city, country, state)
+  - Enter coordinates directly (latitude/longitude)
+  - Click on map to set location
+  - Displays current coordinates and location name
+  - Uses OpenStreetMap tiles
+  - Zoom and pan controls
+  - Clear map to reset view
+
+- **Quick Notes Module**: Simple note-taking with markdown support. Features include:
+  - Create, edit, and delete notes
+  - Markdown formatting (bold, italic, code, headers)
+  - Automatic URL detection and linking
+  - Drag-and-drop reordering of notes
+  - Relative timestamps (e.g., "2h ago", "3d ago")
+  - Click to edit, blur to save
+  - Supports multi-line notes
+
 
 ## Prerequisites
 
