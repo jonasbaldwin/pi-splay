@@ -152,6 +152,66 @@ export class FormatHelperModule {
       { name: 'Minute', format: 'date("i")', example: '30' },
       { name: 'Second', format: 'date("s")', example: '00' },
       { name: 'AM/PM', format: 'date("A")', example: 'AM' }
+    ],
+    bash: [
+      { name: 'ISO Format', format: 'date +"%Y-%m-%dT%H:%M:%S"', example: '2024-01-15T10:30:00' },
+      { name: 'Date Only', format: 'date +"%Y-%m-%d"', example: '2024-01-15' },
+      { name: 'Time Only', format: 'date +"%H:%M:%S"', example: '10:30:00' },
+      { name: 'Full Date/Time', format: 'date +"%Y-%m-%d %H:%M:%S"', example: '2024-01-15 10:30:00' },
+      { name: 'US Format', format: 'date +"%m/%d/%Y"', example: '01/15/2024' },
+      { name: 'European Format', format: 'date +"%d/%m/%Y"', example: '15/01/2024' },
+      { name: 'Unix Timestamp', format: 'date +%s', example: '1705342200' },
+      { name: 'Unix Timestamp (ms)', format: 'date +%s%3N', example: '1705342200000' },
+      { name: 'Year', format: 'date +"%Y"', example: '2024' },
+      { name: 'Month', format: 'date +"%m"', example: '01' },
+      { name: 'Day', format: 'date +"%d"', example: '15' },
+      { name: 'Hour (24h)', format: 'date +"%H"', example: '10' },
+      { name: 'Hour (12h)', format: 'date +"%I"', example: '10' },
+      { name: 'Minutes', format: 'date +"%M"', example: '30' },
+      { name: 'Seconds', format: 'date +"%S"', example: '00' },
+      { name: 'AM/PM', format: 'date +"%p"', example: 'AM' },
+      { name: 'Day Name', format: 'date +"%A"', example: 'Monday' },
+      { name: 'Month Name', format: 'date +"%B"', example: 'January' }
+    ],
+    zsh: [
+      { name: 'ISO Format', format: 'date +"%Y-%m-%dT%H:%M:%S"', example: '2024-01-15T10:30:00' },
+      { name: 'Date Only', format: 'date +"%Y-%m-%d"', example: '2024-01-15' },
+      { name: 'Time Only', format: 'date +"%H:%M:%S"', example: '10:30:00' },
+      { name: 'Full Date/Time', format: 'date +"%Y-%m-%d %H:%M:%S"', example: '2024-01-15 10:30:00' },
+      { name: 'US Format', format: 'date +"%m/%d/%Y"', example: '01/15/2024' },
+      { name: 'European Format', format: 'date +"%d/%m/%Y"', example: '15/01/2024' },
+      { name: 'Unix Timestamp', format: 'date +%s', example: '1705342200' },
+      { name: 'Unix Timestamp (ms)', format: 'date +%s%3N', example: '1705342200000' },
+      { name: 'Year', format: 'date +"%Y"', example: '2024' },
+      { name: 'Month', format: 'date +"%m"', example: '01' },
+      { name: 'Day', format: 'date +"%d"', example: '15' },
+      { name: 'Hour (24h)', format: 'date +"%H"', example: '10' },
+      { name: 'Hour (12h)', format: 'date +"%I"', example: '10' },
+      { name: 'Minutes', format: 'date +"%M"', example: '30' },
+      { name: 'Seconds', format: 'date +"%S"', example: '00' },
+      { name: 'AM/PM', format: 'date +"%p"', example: 'AM' },
+      { name: 'Day Name', format: 'date +"%A"', example: 'Monday' },
+      { name: 'Month Name', format: 'date +"%B"', example: 'January' }
+    ],
+    fish: [
+      { name: 'ISO Format', format: 'date +"%Y-%m-%dT%H:%M:%S"', example: '2024-01-15T10:30:00' },
+      { name: 'Date Only', format: 'date +"%Y-%m-%d"', example: '2024-01-15' },
+      { name: 'Time Only', format: 'date +"%H:%M:%S"', example: '10:30:00' },
+      { name: 'Full Date/Time', format: 'date +"%Y-%m-%d %H:%M:%S"', example: '2024-01-15 10:30:00' },
+      { name: 'US Format', format: 'date +"%m/%d/%Y"', example: '01/15/2024' },
+      { name: 'European Format', format: 'date +"%d/%m/%Y"', example: '15/01/2024' },
+      { name: 'Unix Timestamp', format: 'date +%s', example: '1705342200' },
+      { name: 'Unix Timestamp (ms)', format: 'date +%s%3N', example: '1705342200000' },
+      { name: 'Year', format: 'date +"%Y"', example: '2024' },
+      { name: 'Month', format: 'date +"%m"', example: '01' },
+      { name: 'Day', format: 'date +"%d"', example: '15' },
+      { name: 'Hour (24h)', format: 'date +"%H"', example: '10' },
+      { name: 'Hour (12h)', format: 'date +"%I"', example: '10' },
+      { name: 'Minutes', format: 'date +"%M"', example: '30' },
+      { name: 'Seconds', format: 'date +"%S"', example: '00' },
+      { name: 'AM/PM', format: 'date +"%p"', example: 'AM' },
+      { name: 'Day Name', format: 'date +"%A"', example: 'Monday' },
+      { name: 'Month Name', format: 'date +"%B"', example: 'January' }
     ]
   };
 
@@ -194,6 +254,9 @@ export class FormatHelperModule {
               <option value="go">Go</option>
               <option value="rust">Rust</option>
               <option value="php">PHP</option>
+              <option value="bash">Bash</option>
+              <option value="zsh">Zsh</option>
+              <option value="fish">Fish</option>
             </select>
           </div>
         </div>
