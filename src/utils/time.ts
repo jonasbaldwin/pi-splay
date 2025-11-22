@@ -82,11 +82,12 @@ export function getTimeForTimezone(timezone: string): Date {
 }
 
 export function createTimeMark(timezone: string): { time: string; epoch: number; timestamp: number } {
-  const date = getTimeForTimezone(timezone);
-  const timestamp = date.getTime(); // Store full timestamp in milliseconds
+  // Use Date.now() to get the current UTC timestamp for all timezones
+  // This ensures all marks are synchronized to the same moment in time
+  const timestamp = Date.now();
   const epoch = Math.floor(timestamp / 1000);
-  const useUTC = timezone === 'utc';
-  const time = formatTime(date, true, useUTC);
+  // Format the time string for the specific timezone
+  const time = formatTimestampForTimezone(timestamp, timezone);
   return { time, epoch, timestamp };
 }
 
