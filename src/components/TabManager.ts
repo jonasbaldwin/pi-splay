@@ -61,7 +61,7 @@ export class TabManager {
         return tiles;
       }
     } catch (e) {
-      console.error('Failed to migrate old tiles:', e);
+      console.error('🔵 DEBUG LOCALSTORAGE Failed to migrate old tiles:', e);
     }
     return null;
   }
@@ -290,7 +290,11 @@ export class TabManager {
     try {
       localStorage.setItem('pi-splay-tabs', JSON.stringify(this.tabs));
     } catch (e) {
-      console.error('Failed to save tabs to localStorage:', e);
+      console.error('🔵 DEBUG LOCALSTORAGE Failed to save tabs to localStorage:', e);
+      // Re-throw in development to make errors more visible
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        throw e;
+      }
     }
   }
 
@@ -301,7 +305,7 @@ export class TabManager {
         return JSON.parse(stored) as Tab[];
       }
     } catch (e) {
-      console.error('Failed to load tabs from localStorage:', e);
+      console.error('🔵 DEBUG LOCALSTORAGE Failed to load tabs from localStorage:', e);
     }
     return null;
   }
@@ -312,7 +316,7 @@ export class TabManager {
         localStorage.setItem('pi-splay-active-tab-id', this.activeTabId);
       }
     } catch (e) {
-      console.error('Failed to save active tab ID to localStorage:', e);
+      console.error('🔵 DEBUG LOCALSTORAGE Failed to save active tab ID to localStorage:', e);
     }
   }
 
@@ -320,7 +324,7 @@ export class TabManager {
     try {
       return localStorage.getItem('pi-splay-active-tab-id');
     } catch (e) {
-      console.error('Failed to load active tab ID from localStorage:', e);
+      console.error('🔵 DEBUG LOCALSTORAGE Failed to load active tab ID from localStorage:', e);
       return null;
     }
   }
