@@ -45,7 +45,6 @@ Pi-splay is a touch-friendly modular dashboard built with HTML, TypeScript, Tail
   - Convert between decimal, binary (0b), hexadecimal (0x), and octal (0o)
   - Real-time conversion as you type
   - Copy values in any format to clipboard
-  - Supports negative numbers
 
 - **Timezone Converter Module**: Converts dates and times between different timezones. Features include:
   - Set source timezone (local, UTC, or IANA timezone)
