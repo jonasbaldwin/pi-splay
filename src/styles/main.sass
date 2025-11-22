@@ -471,6 +471,183 @@
           @apply text-gray-600 dark:text-gray-400
           @apply italic
 
+  .quick-notes-module
+    @apply flex flex-col h-full
+    @apply select-none
+    
+    .quick-notes-header
+      @apply flex items-center justify-between mb-4
+      
+      .quick-notes-title
+        @apply text-lg font-semibold
+        @apply text-gray-900 dark:text-white
+      
+      .quick-notes-add-btn
+        @apply bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700
+        @apply text-white font-bold
+        @apply w-8 h-8 rounded-full
+        @apply flex items-center justify-center
+        @apply cursor-pointer
+        @apply transition-colors
+        @apply text-xl
+        @apply leading-none
+        @apply shadow-md
+    
+    .quick-notes-list
+      @apply space-y-3
+      max-height: 400px
+      overflow-y: auto
+      @apply pr-2
+      
+      .note-placeholder
+        @apply text-sm text-gray-500 dark:text-gray-400
+        @apply italic
+        @apply text-center
+        @apply py-4
+      
+      .note-item
+        @apply bg-gray-50 dark:bg-gray-700
+        @apply rounded-lg
+        @apply p-3
+        @apply border border-gray-200 dark:border-gray-600
+        @apply relative
+        @apply transition-colors
+        @apply hover:bg-gray-100 dark:hover:bg-gray-600
+        
+        &.dragging
+          @apply opacity-50
+          @apply cursor-grabbing
+        
+        &.drag-over-top
+          border-top: 2px solid #3b82f6
+          margin-top: -2px
+        
+        &.drag-over-bottom
+          border-bottom: 2px solid #3b82f6
+          margin-bottom: -2px
+        
+        .note-drag-handle
+          @apply absolute left-2 top-2
+          @apply text-gray-400 dark:text-gray-500
+          @apply cursor-grab
+          @apply select-none
+          @apply text-lg
+          @apply leading-none
+          @apply opacity-50 hover:opacity-100
+          @apply transition-opacity
+          @apply z-10
+          font-family: monospace
+          line-height: 0.5
+          user-select: none
+          -webkit-user-select: none
+          
+          &:active
+            @apply cursor-grabbing
+        
+        .note-remove-btn
+          @apply absolute top-2 right-2
+          @apply bg-gray-400 hover:bg-red-500 dark:bg-gray-600 dark:hover:bg-red-600
+          @apply text-white font-bold
+          @apply w-6 h-6 rounded-full
+          @apply flex items-center justify-center
+          @apply cursor-pointer
+          @apply transition-colors
+          @apply text-sm
+          @apply leading-none
+          @apply opacity-70 hover:opacity-100
+          @apply z-10
+        
+        .note-content-display
+          @apply text-sm
+          @apply text-gray-900 dark:text-white
+          @apply mb-2
+          @apply pr-8
+          word-wrap: break-word
+          white-space: pre-wrap
+          min-height: 1.5rem
+          cursor: text
+          
+          .note-empty-placeholder
+            @apply text-gray-400 dark:text-gray-500
+            @apply italic
+          
+          // Markdown styles
+          strong
+            @apply font-bold
+          
+          em
+            @apply italic
+          
+          code
+            @apply bg-gray-200 dark:bg-gray-800
+            @apply text-gray-800 dark:text-gray-200
+            @apply px-1 py-0.5 rounded
+            @apply font-mono
+            @apply text-xs
+          
+          h1
+            @apply text-lg font-bold
+            @apply mb-1
+            @apply mt-2
+          
+          h2
+            @apply text-base font-bold
+            @apply mb-1
+            @apply mt-2
+          
+          h3
+            @apply text-sm font-bold
+            @apply mb-1
+            @apply mt-2
+          
+          // Link styles - make sure links are clickable and not editable
+          .note-link
+            @apply text-blue-600 dark:text-blue-400
+            @apply underline
+            @apply hover:text-blue-800 dark:hover:text-blue-300
+            @apply transition-colors
+            cursor: pointer
+            pointer-events: auto
+            user-select: none
+            -webkit-user-select: none
+            position: relative
+            z-index: 10
+            
+            &:hover
+              @apply text-blue-800 dark:text-blue-300
+            
+            &:active
+              @apply text-blue-900 dark:text-blue-200
+        
+        .note-content-edit
+          @apply text-sm
+          @apply text-gray-900 dark:text-white
+          @apply mb-2
+          @apply pr-8
+          word-wrap: break-word
+          white-space: pre-wrap
+          min-height: 1.5rem
+          outline: none
+          cursor: text
+          
+          &[contenteditable="true"]
+            @apply cursor-text
+            
+            &:focus
+              @apply outline-none
+              cursor: text
+            
+            &:empty:before
+              content: attr(data-placeholder)
+              @apply text-gray-400 dark:text-gray-500
+              @apply italic
+              pointer-events: none
+        
+        .note-date
+          @apply text-xs
+          @apply text-gray-500 dark:text-gray-400
+          @apply italic
+
   .timezone-converter-module
     @apply flex flex-col h-full
     @apply select-none

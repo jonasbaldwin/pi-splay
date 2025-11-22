@@ -1,4 +1,4 @@
-import { Tile, TileSize, TimeTileData, EpochTileData, CalendarTileData, DateTileData, TimezoneConverterTileData, MapTileData, FormatHelperTileData, TimeMark } from '../types';
+import { Tile, TileSize, TimeTileData, EpochTileData, CalendarTileData, DateTileData, TimezoneConverterTileData, MapTileData, FormatHelperTileData, QuickNotesTileData, TimeMark } from '../types';
 import { TimeModule } from './TimeModule';
 import { EpochModule } from './EpochModule';
 import { CalendarModule } from './CalendarModule';
@@ -6,8 +6,9 @@ import { DateModule } from './DateModule';
 import { TimezoneConverterModule } from './TimezoneConverterModule';
 import { MapModule } from './MapModule';
 import { FormatHelperModule } from './FormatHelperModule';
+import { QuickNotesModule } from './QuickNotesModule';
 
-type ModuleInstance = TimeModule | EpochModule | CalendarModule | DateModule | TimezoneConverterModule | MapModule | FormatHelperModule | null;
+type ModuleInstance = TimeModule | EpochModule | CalendarModule | DateModule | TimezoneConverterModule | MapModule | FormatHelperModule | QuickNotesModule | null;
 
 export class TileManager {
   private container: HTMLElement;
@@ -265,6 +266,8 @@ export class TileManager {
           (tileData.module as MapModule).updateData(updates.data as MapTileData);
         } else if (updatedTile.type === 'format-helper') {
           (tileData.module as FormatHelperModule).updateData(updates.data as FormatHelperTileData);
+        } else if (updatedTile.type === 'quick-notes') {
+          (tileData.module as QuickNotesModule).updateData(updates.data as QuickNotesTileData);
         }
       }
       this.saveToStorage();
@@ -331,6 +334,8 @@ export class TileManager {
       return new MapModule(element, tile.data as MapTileData);
     } else if (tile.type === 'format-helper') {
       return new FormatHelperModule(element, tile.data as FormatHelperTileData);
+    } else if (tile.type === 'quick-notes') {
+      return new QuickNotesModule(element, tile.data as QuickNotesTileData);
     }
     return null;
   }

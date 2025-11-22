@@ -99,7 +99,8 @@ function initializeAddTileModal(tileManager: TileManager): void {
     { type: 'date', label: 'Date', icon: '📆' },
     { type: 'timezone-converter', label: 'Timezone Converter', icon: '🌍' },
     { type: 'map', label: 'World Map', icon: '🗺️' },
-    { type: 'format-helper', label: 'Date Formatter', icon: '📝' }
+    { type: 'format-helper', label: 'Date Formatter', icon: '📝' },
+    { type: 'quick-notes', label: 'Quick Notes', icon: '📝' }
   ];
   
   // Populate tile type selection
@@ -187,6 +188,9 @@ function initializeAddTileModal(tileManager: TileManager): void {
     } else if (type === 'format-helper') {
       configHtml = '<p class="config-info">Format helper shows date/time formatting options for different programming languages.</p>';
       selectedConfig = { selectedLanguage: 'javascript' };
+    } else if (type === 'quick-notes') {
+      configHtml = '<p class="config-info">Quick notes tile allows you to add and manage small notes with markdown support.</p>';
+      selectedConfig = { notes: [] };
     }
     
     tileConfig.innerHTML = configHtml;
