@@ -29,8 +29,8 @@ export class CalendarModule {
     this.element = element;
     this.data = data;
     
-    // Initialize dates from data or use defaults
-    this.selectedDates = (data.selectedDates || []).map(d => new Date(d));
+    // Initialize dates from data or use defaults - parse as local dates
+    this.selectedDates = (data.selectedDates || []).map(d => this.parseLocalDate(d));
     // Initialize color indices from data or generate them
     this.dateColors = data.dateColors || [];
     // Ensure dateColors array matches selectedDates length
@@ -185,7 +185,8 @@ export class CalendarModule {
         const target = e.target as HTMLElement;
         const dateStr = target.getAttribute('data-date');
         if (dateStr) {
-          this.handleDayClick(new Date(dateStr));
+          // Parse as local date (YYYY-MM-DD format)
+          this.handleDayClick(this.parseLocalDate(dateStr));
         }
       });
     });
@@ -238,7 +239,8 @@ export class CalendarModule {
         style = `background-color: ${color};`;
       }
       
-      html += `<div class="${classes}" data-date="${date.toISOString()}" style="${style}">${day}</div>`;
+      // Store date as local date string (YYYY-MM-DD) instead of ISO string to avoid timezone issues
+      html += `<div class="${classes}" data-date="${dateStr}" style="${style}">${day}</div>`;
     }
     
     html += '</div>';
@@ -386,6 +388,19 @@ export class CalendarModule {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
   }
 
+  private parseLocalDate(dateStr: string): Date {
+    // Parse YYYY-MM-DD format as a local date (not UTC)
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1; // Month is 0-indexed
+      const day = parseInt(parts[2], 10);
+      return new Date(year, month, day);
+    }
+    // Fallback to regular Date parsing if format doesn't match
+    return new Date(dateStr);
+  }
+
   private formatDateDisplay(date: Date): string {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
@@ -393,7 +408,8 @@ export class CalendarModule {
 
   public updateData(data: CalendarTileData): void {
     this.data = data;
-    this.selectedDates = data.selectedDates.map(d => new Date(d));
+    // Parse dates as local dates to avoid timezone issues
+    this.selectedDates = data.selectedDates.map(d => this.parseLocalDate(d));
     // Initialize color indices from data or generate them
     this.dateColors = data.dateColors || [];
     // Ensure dateColors array matches selectedDates length

@@ -75,17 +75,8 @@
     &.tile-s
       grid-column: span 1
     
-    &.tile-m
-      grid-column: span 2
-    
-    &.tile-l
-      grid-column: span 3
-    
     @media (max-width: 640px)
       width: 100%
-      &.tile-m,
-      &.tile-l
-        grid-column: span 1
     
     &.dragging
       @apply opacity-50 cursor-grabbing
@@ -764,24 +755,6 @@
     @apply z-40
     font-size: 1.5rem
   
-  .trash-can-btn
-    @apply fixed bottom-6 right-6
-    @apply bg-red-600 hover:bg-red-700
-    @apply text-white font-bold
-    @apply w-16 h-16 rounded-full
-    @apply flex items-center justify-center
-    @apply cursor-pointer
-    @apply transition-all
-    @apply shadow-lg
-    @apply z-40
-    font-size: 2rem
-    transform: scale(1)
-    
-    &.trash-can-hovered
-      @apply bg-red-500
-      transform: scale(1.1)
-    line-height: 1
-
   .tile-modal
     @apply fixed inset-0
     @apply bg-black bg-opacity-50

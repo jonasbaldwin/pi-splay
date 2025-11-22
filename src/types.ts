@@ -1,4 +1,4 @@
-export type TileSize = 's' | 'm' | 'l';
+export type TileSize = 's';
 
 export interface TimeMark {
   time: string; // HH:MM:SS.nnnn

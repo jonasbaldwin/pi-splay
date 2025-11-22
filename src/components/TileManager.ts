@@ -28,7 +28,6 @@ export class TileManager {
     this.initializeDragAndDrop();
     this.initializeMouseDragAndDrop();
     this.initializeTouchDragAndDrop();
-    this.createTrashCan();
     this.initializeEditMode();
   }
   
@@ -111,10 +110,9 @@ export class TileManager {
           removeBtn.style.opacity = '0';
         }
       });
-      // Hide drop zones, drop indicator, and trash can
+      // Hide drop zones and drop indicator
       this.hideAllDropZones();
       this.hideDropIndicator();
-      this.hideTrashCan();
       
       // Reset any drag state
       this.draggedElement = null;
@@ -136,16 +134,14 @@ export class TileManager {
     return this.isEditMode;
   }
   
-  private createTrashCan(): void {
-    this.trashCan = document.createElement('button');
-    this.trashCan.className = 'trash-can-btn';
-    this.trashCan.setAttribute('aria-label', 'Delete tile');
-    this.trashCan.innerHTML = '🗑️';
-    this.trashCan.style.display = 'none';
-    document.body.appendChild(this.trashCan);
-  }
-
   public addTile(tile: Tile): void {
+    // Migrate old tile sizes to 's' (double-wide feature was removed)
+    // Handle legacy tiles from localStorage that might have 'm' or 'l'
+    const tileSize = tile.size as string;
+    if (tileSize === 'm' || tileSize === 'l') {
+      tile.size = 's';
+    }
+    
     // If this is a new time or epoch tile, copy marks from existing time/epoch tiles
     if (tile.type === 'time' || tile.type === 'epoch') {
       const existingMarks = this.getExistingMarks();
@@ -186,10 +182,13 @@ export class TileManager {
       }
     }
     
-    // Set grid position if specified
+    // Set grid position - always use span 1 (double-wide feature was removed)
     if (tile.gridPosition) {
-      tileElement.style.gridColumn = `${tile.gridPosition.x + 1} / span ${this.getTileSpan(tile.size)}`;
+      tileElement.style.gridColumn = `${tile.gridPosition.x + 1} / span 1`;
       tileElement.style.gridRow = `${tile.gridPosition.y + 1}`;
+    } else {
+      // Even without explicit position, ensure span is 1
+      tileElement.style.gridColumn = 'span 1';
     }
     
     this.tiles.set(tile.id, { tile, module });
@@ -245,9 +244,9 @@ export class TileManager {
 
     const element = this.container.querySelector(`[data-tile-id="${id}"]`) as HTMLElement;
     if (element) {
-      // Update size class
+      // Update size class (all tiles are now 's')
       element.className = element.className.replace(/tile-[sml]/g, '');
-      element.classList.add(`tile-${updatedTile.size}`);
+      element.classList.add('tile-s');
       
       // Update module if data changed
       if (updates.data && tileData.module) {
@@ -271,7 +270,8 @@ export class TileManager {
 
   private createTileElement(tile: Tile): HTMLElement {
     const element = document.createElement('div');
-    element.className = `tile tile-${tile.size}`;
+    // All tiles are now 's' size (double-wide feature was removed)
+    element.className = 'tile tile-s';
     element.setAttribute('data-tile-id', tile.id);
     // Set draggable based on current edit mode state
     element.setAttribute('draggable', this.isEditMode ? 'true' : 'false');
@@ -381,9 +381,6 @@ export class TileManager {
     // Show all drop zones
     this.showAllDropZones();
     
-    // Show trash can and hide add button
-    this.showTrashCan();
-    
     if (e.dataTransfer) {
       e.dataTransfer.effectAllowed = 'move';
       e.dataTransfer.setData('text/html', tile.outerHTML);
@@ -394,21 +391,12 @@ export class TileManager {
     const target = e.target as HTMLElement;
     target.classList.remove('dragging');
     
-    // Check if we're over the trash can
-    if (this.trashCan && this.isOverTrashCan(e)) {
-      const tileId = this.draggedElement?.getAttribute('data-tile-id');
-      if (tileId) {
-        this.removeTile(tileId);
-      }
-    }
-    
     this.draggedElement = null;
     this.draggedIndex = -1;
     this.lastHighlightedGridPos = null;
     
     this.hideDropIndicator();
     this.hideAllDropZones();
-    this.hideTrashCan();
     
     // Remove dragover class from all tiles
     this.container.querySelectorAll('.tile').forEach(tile => {
@@ -418,16 +406,6 @@ export class TileManager {
 
   private handleDragOver(e: DragEvent): void {
     e.preventDefault();
-    
-    // Check if over trash can
-    if (this.trashCan && this.isOverTrashCan(e)) {
-      e.dataTransfer!.dropEffect = 'move';
-      this.trashCan.classList.add('trash-can-hovered');
-      this.hideDropIndicator();
-      return;
-    }
-    
-    this.trashCan?.classList.remove('trash-can-hovered');
     e.dataTransfer!.dropEffect = 'move';
 
     // Show drop indicator at grid position and highlight hovered zone
@@ -435,34 +413,6 @@ export class TileManager {
     if (gridPos) {
       this.showDropIndicator(gridPos);
       this.highlightHoveredDropZone(gridPos);
-    }
-  }
-  
-  private isOverTrashCan(e: DragEvent | TouchEvent | MouseEvent): boolean {
-    if (!this.trashCan) return false;
-    
-    const trashRect = this.trashCan.getBoundingClientRect();
-    const clientX = 'clientX' in e ? e.clientX : (e.touches?.[0]?.clientX || e.changedTouches?.[0]?.clientX);
-    const clientY = 'clientY' in e ? e.clientY : (e.touches?.[0]?.clientY || e.changedTouches?.[0]?.clientY);
-    
-    if (clientX === undefined || clientY === undefined) return false;
-    
-    return clientX >= trashRect.left && 
-           clientX <= trashRect.right && 
-           clientY >= trashRect.top && 
-           clientY <= trashRect.bottom;
-  }
-  
-  private showTrashCan(): void {
-    if (this.trashCan) {
-      this.trashCan.style.display = 'flex';
-    }
-  }
-  
-  private hideTrashCan(): void {
-    if (this.trashCan) {
-      this.trashCan.style.display = 'none';
-      this.trashCan.classList.remove('trash-can-hovered');
     }
   }
   
@@ -536,7 +486,6 @@ export class TileManager {
   
   private dropIndicator: HTMLElement | null = null;
   private dropZones: HTMLElement[] = [];
-  private trashCan: HTMLElement | null = null;
   private editModeBtn: HTMLElement | null = null;
   private isEditMode: boolean = false;
   private lastHighlightedGridPos: { col: number; row: number } | null = null;
@@ -564,12 +513,14 @@ export class TileManager {
   
   private showAllDropZones(): void {
     // Calculate occupied positions
+    // Note: All tiles now occupy only 1 column (double-wide feature was removed)
     const occupied = new Set<string>();
     this.tiles.forEach((tileData, id) => {
       const tile = tileData.tile;
       const gridPos = tile.gridPosition || this.getCurrentGridPosition(id);
       if (gridPos) {
-        const span = this.getTileSpan(tile.size);
+        // Always use span 1 since double-wide feature was removed
+        const span = 1;
         for (let c = gridPos.x; c < gridPos.x + span; c++) {
           occupied.add(`${c},${gridPos.y}`);
         }
@@ -707,17 +658,6 @@ export class TileManager {
     
     if (!this.draggedElement) return;
     
-    // Check if we're over the trash can
-    if (this.trashCan && this.isOverTrashCan(e)) {
-      const tileId = this.draggedElement.getAttribute('data-tile-id');
-      if (tileId) {
-        this.removeTile(tileId);
-      }
-      this.hideTrashCan();
-      this.lastHighlightedGridPos = null;
-      return;
-    }
-    
     // Use the last highlighted position if available (most accurate)
     // Otherwise fall back to calculating from event
     const gridPos = this.lastHighlightedGridPos || this.getGridPositionFromEvent(e);
@@ -727,8 +667,8 @@ export class TileManager {
       if (tileId) {
         const tileData = this.tiles.get(tileId);
         if (tileData) {
-          // Set grid position
-          this.draggedElement.style.gridColumn = `${gridPos.col + 1} / span ${this.getTileSpan(tileData.tile.size)}`;
+          // Set grid position (all tiles use span 1)
+          this.draggedElement.style.gridColumn = `${gridPos.col + 1} / span 1`;
           this.draggedElement.style.gridRow = `${gridPos.row + 1}`;
           
           // Update tile data
@@ -738,7 +678,6 @@ export class TileManager {
       }
     }
     
-    this.hideTrashCan();
     this.lastHighlightedGridPos = null;
     
     // Remove dragover from all tiles
@@ -748,8 +687,7 @@ export class TileManager {
   }
   
   private getTileSpan(size: string): number {
-    if (size === 'm') return 2;
-    if (size === 'l') return 3;
+    // All tiles now use span 1 (double-wide feature was removed)
     return 1;
   }
 
@@ -848,7 +786,6 @@ export class TileManager {
     if ((deltaY > 10 || deltaX > 10) && !this.isMouseDragging) {
       this.isMouseDragging = true;
       this.draggedElement.classList.add('dragging');
-      this.showTrashCan();
       // Show drop zones during drag for accurate positioning
       this.showAllDropZones();
       e.preventDefault();
@@ -857,15 +794,6 @@ export class TileManager {
     // Only continue if we're actually dragging
     if (this.isMouseDragging && this.draggedElement) {
       e.preventDefault();
-      
-      // Check if over trash can
-      if (this.trashCan && this.isOverTrashCan(e)) {
-        this.trashCan.classList.add('trash-can-hovered');
-        this.hideDropIndicator();
-        return;
-      }
-      
-      this.trashCan?.classList.remove('trash-can-hovered');
       
       // Show drop indicator at grid position and highlight hovered zone
       const gridPos = this.getGridPositionFromEvent(e);
@@ -894,12 +822,7 @@ export class TileManager {
       e.preventDefault();
       e.stopPropagation();
       
-      // Check if we're over the trash can
-      if (this.trashCan && this.isOverTrashCan(e)) {
-        if (tileId) {
-          this.removeTile(tileId);
-        }
-      } else if (tileId) {
+      if (tileId) {
         // Use the last highlighted position if available (most accurate)
         // Otherwise fall back to calculating from event
         const gridPos = this.lastHighlightedGridPos || this.getGridPositionFromEvent(e);
@@ -910,8 +833,8 @@ export class TileManager {
             const currentPos = tileData.tile.gridPosition || this.getCurrentGridPosition(tileId);
             // Only move if position actually changed
             if (!currentPos || currentPos.x !== gridPos.col || currentPos.y !== gridPos.row) {
-              // Set grid position
-              draggedTile.style.gridColumn = `${gridPos.col + 1} / span ${this.getTileSpan(tileData.tile.size)}`;
+              // Set grid position (all tiles use span 1)
+              draggedTile.style.gridColumn = `${gridPos.col + 1} / span 1`;
               draggedTile.style.gridRow = `${gridPos.row + 1}`;
               
               // Update tile data
@@ -927,9 +850,8 @@ export class TileManager {
         t.classList.remove('dragover');
       });
       
-      // Always hide drop indicator and trash can
+      // Always hide drop indicator
       this.hideDropIndicator();
-      this.hideTrashCan();
       this.lastHighlightedGridPos = null;
       
       // Re-show drop zones since we're still in edit mode
@@ -994,21 +916,11 @@ export class TileManager {
       this.isTouchDragging = true;
       this.draggedElement.classList.add('dragging');
       this.showAllDropZones();
-      this.showTrashCan();
       e.preventDefault();
     }
     
     if (this.isTouchDragging) {
       e.preventDefault();
-      
-      // Check if over trash can
-      if (this.trashCan && this.isOverTrashCan(e)) {
-        this.trashCan.classList.add('trash-can-hovered');
-        this.hideDropIndicator();
-        return;
-      }
-      
-      this.trashCan?.classList.remove('trash-can-hovered');
       
       // Show drop indicator at grid position and highlight hovered zone
       const gridPos = this.getGridPositionFromEvent(e);
@@ -1025,33 +937,24 @@ export class TileManager {
     if (this.isTouchDragging) {
       e.preventDefault();
       
-      // Check if we're over the trash can
-      if (this.trashCan && this.isOverTrashCan(e)) {
+      const touch = e.changedTouches[0];
+      // Use the last highlighted position if available (most accurate)
+      // Otherwise fall back to calculating from event
+      const gridPos = this.lastHighlightedGridPos || this.getGridPositionFromEvent(e);
+      
+      if (gridPos) {
+        // Position tile at grid coordinates
         const tileId = this.draggedElement.getAttribute('data-tile-id');
         if (tileId) {
-          this.removeTile(tileId);
-        }
-        this.lastHighlightedGridPos = null;
-      } else {
-        const touch = e.changedTouches[0];
-        // Use the last highlighted position if available (most accurate)
-        // Otherwise fall back to calculating from event
-        const gridPos = this.lastHighlightedGridPos || this.getGridPositionFromEvent(e);
-        
-        if (gridPos) {
-          // Position tile at grid coordinates
-          const tileId = this.draggedElement.getAttribute('data-tile-id');
-          if (tileId) {
-            const tileData = this.tiles.get(tileId);
-            if (tileData) {
-              // Set grid position
-              this.draggedElement.style.gridColumn = `${gridPos.col + 1} / span ${this.getTileSpan(tileData.tile.size)}`;
-              this.draggedElement.style.gridRow = `${gridPos.row + 1}`;
-              
-              // Update tile data
-              tileData.tile.gridPosition = { x: gridPos.col, y: gridPos.row };
-              this.saveToStorage();
-            }
+          const tileData = this.tiles.get(tileId);
+          if (tileData) {
+            // Set grid position (all tiles use span 1)
+            this.draggedElement.style.gridColumn = `${gridPos.col + 1} / span 1`;
+            this.draggedElement.style.gridRow = `${gridPos.row + 1}`;
+            
+            // Update tile data
+            tileData.tile.gridPosition = { x: gridPos.col, y: gridPos.row };
+            this.saveToStorage();
           }
         }
       }
@@ -1063,7 +966,6 @@ export class TileManager {
       
       this.hideDropIndicator();
       this.hideAllDropZones();
-      this.hideTrashCan();
       this.lastHighlightedGridPos = null;
     }
     

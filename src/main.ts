@@ -46,7 +46,7 @@ function initializeDashboard(): void {
     {
       id: generateId(),
       type: 'calendar',
-      size: 'm',
+      size: 's',
       data: {
         selectedDates: [],
         currentMonth: today.getMonth(),
