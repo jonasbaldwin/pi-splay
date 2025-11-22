@@ -74,6 +74,25 @@ export function formatElapsedTime(ms: number): string {
   }
 }
 
+export function formatDetailedElapsedTime(ms: number): string {
+  const totalMs = Math.abs(ms);
+  
+  // Calculate each component
+  const milliseconds = totalMs % 1000;
+  const totalSeconds = Math.floor(totalMs / 1000);
+  const seconds = totalSeconds % 60;
+  const totalMinutes = Math.floor(totalSeconds / 60);
+  const minutes = totalMinutes % 60;
+  const totalHours = Math.floor(totalMinutes / 60);
+  const hours = totalHours % 24;
+  const totalDays = Math.floor(totalHours / 24);
+  const days = totalDays % 365;
+  const years = Math.floor(totalDays / 365);
+  
+  // Always show all components: y years d days h hours m minutes s seconds m milliseconds
+  return `${years}y ${days}d ${hours}h ${minutes}m ${seconds}s ${milliseconds}ms`;
+}
+
 /**
  * Formats a UTC timestamp (milliseconds) as a time string for a given timezone.
  * This is used to convert stored UTC timestamps to the appropriate display timezone.
@@ -131,4 +150,21 @@ export function getTimezoneLabel(timezone: string): string {
   } catch (e) {
     return timezone.split('/').pop()?.replace(/_/g, ' ') || timezone;
   }
+}
+
+export function formatEpochToDateTime(epoch: number): string {
+  const date = new Date(epoch * 1000);
+  
+  // Format: "Oct 12, 2025 17:06:03.0023 UTC"
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const month = months[date.getUTCMonth()];
+  const day = date.getUTCDate();
+  const year = date.getUTCFullYear();
+  
+  const hours = String(date.getUTCHours()).padStart(2, '0');
+  const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+  const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+  const milliseconds = String(date.getUTCMilliseconds()).padStart(4, '0');
+  
+  return `${month} ${day}, ${year} ${hours}:${minutes}:${seconds}.${milliseconds} UTC`;
 }

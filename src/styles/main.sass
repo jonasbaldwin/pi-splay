@@ -183,10 +183,18 @@
     @apply select-none
     @apply justify-center
     
-    .epoch-label
-      @apply text-base font-normal
-      @apply text-gray-600 dark:text-gray-300
-      @apply mb-4
+    .epoch-header
+      @apply flex items-center justify-between mb-4
+      
+      .epoch-label
+        @apply text-base font-normal
+        @apply text-gray-600 dark:text-gray-300
+      
+      .epoch-copy-btn
+        @apply text-xs bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600
+        @apply text-gray-800 dark:text-white px-2 py-1 rounded
+        @apply cursor-pointer
+        @apply transition-colors
     
     .epoch-display
       @apply text-4xl font-mono font-bold
@@ -197,63 +205,136 @@
       .epoch-display
         @apply text-3xl
     
-    .marks-section
+    .epoch-calculator
       @apply mt-4 pt-4 border-t border-gray-300 dark:border-gray-700
       
-      .marks-header
+      .calculator-header
         @apply flex items-center justify-between mb-3
         
-        .marks-title
+        .calculator-title
           @apply text-sm text-gray-500 dark:text-gray-400
           @apply font-normal
         
-        .marks-clear-btn
+        .calculator-clear-btn
           @apply text-xs bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600
           @apply text-gray-800 dark:text-white px-2 py-1 rounded
           @apply cursor-pointer
           @apply transition-colors
       
-      .marks-list
-        @apply space-y-2
-        max-height: 150px
-        overflow-y: auto
+      .calculator-inputs
+        @apply flex flex-col gap-3
+        @apply mb-3
         
-        .mark-item
-          @apply text-sm font-mono
-          @apply flex items-center gap-2
+        .input-group
+          @apply flex flex-col gap-1
+          
+          .input-label-container
+            @apply flex items-baseline gap-2
+            
+            .input-label
+              @apply text-sm font-mono font-semibold
+              @apply text-gray-700 dark:text-gray-300
+              @apply min-w-[20px]
+            
+            .input-label-value
+              @apply text-xs font-mono
+              @apply text-gray-600 dark:text-gray-400
+          
+          .epoch-input
+            @apply w-full
+            @apply bg-gray-100 dark:bg-gray-700
+            @apply text-gray-900 dark:text-white
+            @apply px-3 py-2 rounded
+            @apply border border-gray-300 dark:border-gray-600
+            @apply font-mono text-sm
+            @apply focus:outline-none focus:ring-2 focus:ring-blue-500
+            @apply placeholder-gray-400 dark:placeholder-gray-500
+      
+      .calculator-comparison
+        @apply mb-3
+        
+        .comparison-text
+          @apply text-sm font-mono font-semibold
           @apply text-gray-700 dark:text-gray-300
-          
-          .mark-index
-            @apply text-gray-500 dark:text-gray-500 text-xs
-            @apply min-w-[20px]
-          
-          .mark-time
-            @apply text-gray-700 dark:text-gray-300
-          
-          .mark-separator
-            @apply text-gray-500 mx-1
-          
-          .mark-epoch
-            @apply text-gray-600 dark:text-gray-400
-            @apply flex-1
-          
-          .mark-elapsed
-            @apply text-blue-600 dark:text-blue-400
-            @apply min-w-[60px]
-          
-          .mark-remove-btn
-            @apply text-gray-800 dark:text-white hover:text-red-600 dark:hover:text-red-300
-            @apply opacity-70 hover:opacity-100
-            @apply transition-opacity
-            @apply cursor-pointer
-            @apply text-lg
-            @apply leading-none
-            @apply px-1
-            @apply font-bold
+      
+      .calculator-scale
+        @apply mb-3
         
-        .mark-placeholder
-          @apply text-gray-400 dark:text-gray-600 text-sm
-          @apply font-mono
+        .scale-container
+          @apply relative
+          @apply w-full
+          
+          .scale-bar
+            @apply relative
+            @apply w-full
+            height: 40px
+            @apply rounded
+            @apply overflow-visible
+            @apply border border-gray-300 dark:border-gray-600
+            z-index: 1
+            
+            .scale-bar-fill
+              @apply absolute inset-0
+              @apply w-full h-full
+              z-index: 1
+          
+          .scale-markers
+            @apply absolute
+            @apply left-0 right-0
+            @apply pointer-events-none
+            top: 0
+            height: 40px
+            z-index: 10
+            
+            .scale-marker
+              @apply absolute
+              @apply top-1/2
+              transform: translateX(-50%) translateY(-50%)
+              @apply flex flex-col
+              @apply items-center
+              @apply justify-center
+              
+              .marker-label
+                @apply text-sm font-mono font-bold
+                @apply text-center
+                @apply flex items-center justify-center
+                @apply bg-black
+                @apply shadow-md
+                @apply relative
+                z-index: 20
+                
+                &.marker-circle
+                  @apply w-6 h-6
+                  @apply rounded-full
+                
+                &.marker-triangle-right
+                  @apply w-6 h-6
+                  clip-path: polygon(0 0, 100% 50%, 0 100%)
+                  @apply flex items-center justify-start
+                  padding-left: 4px
+                
+                &.marker-triangle-left
+                  @apply w-6 h-6
+                  clip-path: polygon(100% 0, 0 50%, 100% 100%)
+                  @apply flex items-center justify-end
+                  padding-right: 4px
+              
+              .marker-line
+                @apply hidden
+      
+      .calculator-result
+        @apply mt-3
+        
+        .calculator-result-item
+          @apply space-y-1
+          
+          .result-label
+            @apply text-xs text-gray-500 dark:text-gray-400
+            @apply font-normal
+          
+          .result-value
+            @apply text-lg font-mono font-bold
+            @apply text-blue-600 dark:text-blue-400
 
   .date-module
     @apply flex flex-col h-full

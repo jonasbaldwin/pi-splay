@@ -21,6 +21,8 @@ export interface TimeTileData {
 
 export interface EpochTileData {
   marks: TimeMark[];
+  inputA?: string;
+  inputB?: string;
 }
 
 export interface CalendarTileData {
