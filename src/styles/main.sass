@@ -688,6 +688,19 @@
       .map-info
         @apply space-y-1
         
+        .map-info-header
+          @apply flex items-center justify-between mb-2
+          
+          .map-info-title
+            @apply text-sm text-gray-400
+            @apply font-normal
+          
+          .map-clear-btn
+            @apply text-xs bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600
+            @apply text-gray-800 dark:text-white px-2 py-1 rounded-full
+            @apply cursor-pointer
+            @apply transition-colors
+        
         .map-coords-display
           @apply text-xs font-mono
           @apply text-gray-600 dark:text-gray-400

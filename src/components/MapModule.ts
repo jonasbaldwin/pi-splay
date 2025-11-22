@@ -167,6 +167,10 @@ export class MapModule {
             </div>
           </div>
           <div class="map-info">
+            <div class="map-info-header">
+              <div class="map-info-title">Info:</div>
+              <button class="map-clear-btn" data-clear-map title="Clear map">Clear</button>
+            </div>
             <div class="map-coords-display" data-coords-display></div>
             <div class="map-location-display" data-location-display></div>
           </div>
@@ -223,6 +227,12 @@ export class MapModule {
         e.preventDefault();
         this.goToCoordinates();
       }
+    });
+
+    // Add clear button handler
+    this.element.querySelector('[data-clear-map]')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.clearMap();
     });
   }
 
@@ -411,6 +421,37 @@ export class MapModule {
     this.data.locationName = undefined;
     this.locationInput.value = '';
     this.locationDisplay.textContent = '';
+    this.saveToStorage();
+  }
+
+  private clearMap(): void {
+    // Clear inputs
+    this.locationInput.value = '';
+    this.latInput.value = '';
+    this.lngInput.value = '';
+    
+    // Clear displays
+    this.coordinatesDisplay.textContent = '';
+    this.locationDisplay.textContent = '';
+    
+    // Clear data
+    this.data.latitude = undefined;
+    this.data.longitude = undefined;
+    this.data.locationName = undefined;
+    this.data.zoom = 2;
+    
+    // Remove marker
+    if (this.marker && this.map) {
+      this.map.removeLayer(this.marker);
+      this.marker = null;
+    }
+    
+    // Reset map view to world center
+    if (this.map) {
+      this.map.setView([0, 0], 2);
+    }
+    
+    // Save to storage
     this.saveToStorage();
   }
 
