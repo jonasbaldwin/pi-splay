@@ -15,6 +15,7 @@ export class EpochModule {
   private resultDisplay!: HTMLElement;
   private clockManager: ClockManager;
   private clockSubscriber: { onTick: () => void };
+  private showMilliseconds: boolean = false;
 
   constructor(element: HTMLElement, data: EpochTileData) {
     this.element = element;
@@ -39,7 +40,10 @@ export class EpochModule {
       <div class="epoch-module">
         <div class="epoch-header">
           <div class="epoch-label">Epoch:</div>
-          <button class="epoch-copy-btn" data-copy-epoch title="Copy epoch number">Copy</button>
+          <div class="epoch-actions">
+            <button class="epoch-toggle-btn" data-toggle-epoch title="Toggle between seconds and milliseconds">Show Milliseconds</button>
+            <button class="epoch-copy-btn" data-copy-epoch title="Copy epoch number">Copy</button>
+          </div>
         </div>
         <div class="epoch-display" data-epoch-display></div>
         <div class="epoch-calculator">
@@ -105,6 +109,12 @@ export class EpochModule {
       this.copyEpoch();
     });
     
+    // Add toggle button handler
+    this.element.querySelector('[data-toggle-epoch]')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.toggleEpochFormat();
+    });
+    
     this.updateEpoch();
     this.updateCalculation();
     
@@ -148,6 +158,7 @@ export class EpochModule {
       e.stopPropagation();
       this.clearInputs();
     });
+    
   }
 
   private validateEpochValue(value: string): string | null {
@@ -175,25 +186,101 @@ export class EpochModule {
   }
 
   private updateEpoch(): void {
-    const epoch = Math.floor(Date.now() / 1000);
-    this.epochDisplay.textContent = epoch.toString();
+    if (this.showMilliseconds) {
+      const epoch = Date.now();
+      this.epochDisplay.textContent = epoch.toString();
+    } else {
+      const epoch = Math.floor(Date.now() / 1000);
+      this.epochDisplay.textContent = epoch.toString();
+    }
+  }
+  
+  private toggleEpochFormat(): void {
+    // Convert input values when toggling
+    const value1 = this.input1.value.trim();
+    const value2 = this.input2.value.trim();
+    
+    if (value1) {
+      const num1 = parseInt(value1, 10);
+      if (!isNaN(num1)) {
+        if (this.showMilliseconds) {
+          // Currently showing milliseconds, switching to seconds - convert ms to s
+          this.input1.value = Math.floor(num1 / 1000).toString();
+        } else {
+          // Currently showing seconds, switching to milliseconds - convert s to ms
+          this.input1.value = (num1 * 1000).toString();
+        }
+      }
+    }
+    
+    if (value2) {
+      const num2 = parseInt(value2, 10);
+      if (!isNaN(num2)) {
+        if (this.showMilliseconds) {
+          // Currently showing milliseconds, switching to seconds - convert ms to s
+          this.input2.value = Math.floor(num2 / 1000).toString();
+        } else {
+          // Currently showing seconds, switching to milliseconds - convert s to ms
+          this.input2.value = (num2 * 1000).toString();
+        }
+      }
+    }
+    
+    // Toggle the display mode
+    this.showMilliseconds = !this.showMilliseconds;
+    const toggleBtn = this.element.querySelector('[data-toggle-epoch]') as HTMLElement;
+    if (toggleBtn) {
+      toggleBtn.textContent = this.showMilliseconds ? 'Show Seconds' : 'Show Milliseconds';
+    }
+    
+    // Save the converted values
+    this.saveInputs();
+    
+    // Update displays
+    this.updateEpoch();
+    this.updateCalculation();
   }
   
   private copyEpoch(): void {
-    const epoch = Math.floor(Date.now() / 1000);
-    navigator.clipboard.writeText(epoch.toString()).catch(err => {
-      console.error('Failed to copy epoch:', err);
-    });
+    if (this.showMilliseconds) {
+      const epoch = Date.now();
+      navigator.clipboard.writeText(epoch.toString()).catch(err => {
+        console.error('Failed to copy epoch:', err);
+      });
+    } else {
+      const epoch = Math.floor(Date.now() / 1000);
+      navigator.clipboard.writeText(epoch.toString()).catch(err => {
+        console.error('Failed to copy epoch:', err);
+      });
+    }
   }
 
   private updateCalculation(): void {
     const value1 = this.input1.value.trim();
     const value2 = this.input2.value.trim();
     
-    // Get current epoch if input is blank
-    const now = Math.floor(Date.now() / 1000);
-    const epochA = value1 ? parseInt(value1, 10) : now;
-    const epochB = value2 ? parseInt(value2, 10) : now;
+    // Get current epoch - use the same format as the display
+    const now = this.showMilliseconds ? Date.now() : Math.floor(Date.now() / 1000);
+    
+    // Parse values - interpret based on current display mode
+    const parseEpoch = (value: string): number => {
+      if (!value) return now;
+      const num = parseInt(value, 10);
+      if (isNaN(num)) return now;
+      
+      // If showing milliseconds, assume inputs are milliseconds
+      // If showing seconds, assume inputs are seconds
+      if (this.showMilliseconds) {
+        // Input is in milliseconds, use as-is
+        return num;
+      } else {
+        // Input is in seconds, use as-is
+        return num;
+      }
+    };
+    
+    const epochA = parseEpoch(value1);
+    const epochB = parseEpoch(value2);
     
     // If both are blank, don't show comparison
     if (!value1 && !value2) {
@@ -204,9 +291,16 @@ export class EpochModule {
       return;
     }
     
-    // Calculate difference in seconds
-    const diffSeconds = Math.abs(epochB - epochA);
-    const diffMs = diffSeconds * 1000;
+    // Calculate difference - convert to milliseconds for formatting
+    let diffMs: number;
+    if (this.showMilliseconds) {
+      // Both are in milliseconds
+      diffMs = Math.abs(epochB - epochA);
+    } else {
+      // Both are in seconds, convert to milliseconds
+      const diffSeconds = Math.abs(epochB - epochA);
+      diffMs = diffSeconds * 1000;
+    }
     
     // Format the difference with detailed breakdown
     const formatted = formatDetailedElapsedTime(diffMs);
@@ -226,29 +320,57 @@ export class EpochModule {
     this.resultDisplay.innerHTML = resultHtml;
   }
   
-  private updateLabels(epochA: number, epochB: number, now: number, value1: string, value2: string): void {
+  private updateLabels(epochA: number, epochB: number, nowInput: number, value1: string, value2: string): void {
+    // Convert to seconds for color calculation and date formatting
+    const now = this.showMilliseconds ? Math.floor(nowInput / 1000) : nowInput;
+    const epochA_seconds = this.showMilliseconds ? Math.floor(epochA / 1000) : epochA;
+    const epochB_seconds = this.showMilliseconds ? Math.floor(epochB / 1000) : epochB;
+    
     // Get colors for A and B
+    // X = now (the value between 0 and now)
+    // Segments: 0→now (green→red), now→now+X (red→purple), now+X→now+X*2 (purple→black)
     const getColorForEpoch = (epoch: number): string => {
       if (epoch <= now) {
-        // Past or present: white to red
+        // Past or present: green to red (0 to now)
         const clampedEpoch = Math.max(0, Math.min(epoch, now));
         const proximityToNow = now > 0 ? clampedEpoch / now : 0;
-        const r = Math.floor(255 * proximityToNow);
-        const g = Math.floor(255 * (1 - proximityToNow));
-        const b = Math.floor(255 * (1 - proximityToNow));
+        const r = Math.floor(255 * proximityToNow); // Red increases from 0 (green) to 255 (red)
+        const g = Math.floor(255 * (1 - proximityToNow)); // Green decreases from 255 (green) to 0 (red)
+        const b = 0; // Blue stays at 0
         return `rgb(${r}, ${g}, ${b})`;
       } else {
-        // Future: purple
-        return `rgb(128, 0, 128)`;
+        const X = now; // X is the value between 0 and now
+        const futureStart = now; // now + 0
+        const futureEnd = now + X; // now + X
+        const distantFutureEnd = now + X * 2; // now + X * 2
+        
+        if (epoch <= futureEnd) {
+          // Future: red to purple (now to now + X)
+          const t = (epoch - futureStart) / X;
+          const r = Math.floor(255 - (127 * t)); // Red decreases from 255 to 128
+          const g = 0;
+          const b = Math.floor(128 * t); // Blue increases from 0 to 128
+          return `rgb(${r}, ${g}, ${b})`;
+        } else if (epoch <= distantFutureEnd) {
+          // Distant future: purple to black (now + X to now + X * 2)
+          const t = (epoch - futureEnd) / X;
+          const r = Math.floor(128 * (1 - t)); // Red decreases from 128 to 0
+          const g = 0;
+          const b = Math.floor(128 * (1 - t)); // Blue decreases from 128 to 0
+          return `rgb(${r}, ${g}, ${b})`;
+        } else {
+          // Beyond distant future: black
+          return `rgb(0, 0, 0)`;
+        }
       }
     };
     
-    const colorA = getColorForEpoch(epochA);
-    const colorB = getColorForEpoch(epochB);
+    const colorA = getColorForEpoch(epochA_seconds);
+    const colorB = getColorForEpoch(epochB_seconds);
     
-    // Format labels
-    const labelAText = value1 ? formatEpochToDateTime(epochA) : 'Now';
-    const labelBText = value2 ? formatEpochToDateTime(epochB) : 'Now';
+    // Format labels - formatEpochToDateTime expects seconds
+    const labelAText = value1 ? formatEpochToDateTime(epochA_seconds) : 'Now';
+    const labelBText = value2 ? formatEpochToDateTime(epochB_seconds) : 'Now';
     
     this.labelA.textContent = labelAText;
     this.labelA.style.color = colorA;
@@ -257,10 +379,15 @@ export class EpochModule {
     this.labelB.style.color = colorB;
   }
   
-  private updateScale(epochA: number, epochB: number, now: number, value1: string, value2: string): void {
-    // Find lower (L) and higher (H) values
-    const L = Math.min(epochA, epochB);
-    const H = Math.max(epochA, epochB);
+  private updateScale(epochA: number, epochB: number, nowInput: number, value1: string, value2: string): void {
+    // Convert all to seconds for scale calculation (scale always uses seconds)
+    const now = this.showMilliseconds ? Math.floor(nowInput / 1000) : nowInput;
+    const epochA_seconds = this.showMilliseconds ? Math.floor(epochA / 1000) : epochA;
+    const epochB_seconds = this.showMilliseconds ? Math.floor(epochB / 1000) : epochB;
+    
+    // Find lower (L) and higher (H) values (in seconds)
+    const L = Math.min(epochA_seconds, epochB_seconds);
+    const H = Math.max(epochA_seconds, epochB_seconds);
     const R = H; // Rightmost value
     
     // Calculate scale bounds with 7% padding
@@ -276,34 +403,52 @@ export class EpochModule {
     }
     
     // Calculate positions as percentages (0-100%) within the scale range
-    const posA = ((epochA - scaleLeft) / scaleRange) * 100;
-    const posB = ((epochB - scaleLeft) / scaleRange) * 100;
+    const posA = ((epochA_seconds - scaleLeft) / scaleRange) * 100;
+    const posB = ((epochB_seconds - scaleLeft) / scaleRange) * 100;
     const posNow = ((now - scaleLeft) / scaleRange) * 100;
     
-    // Color stops: 0 (blue), NOW/2 (purple), NOW (red)
+    // X = now (the value between 0 and now)
+    // Segments: 0→now (green→red), now→now+X (red→purple), now+X→now+X*2 (purple→black)
+    const X = now;
     const nowHalf = now / 2;
+    const futureEnd = now + X; // now + X
+    const distantFutureEnd = now + X * 2; // now + X * 2
     
     // Get color for any epoch value
     const getColorForEpoch = (epoch: number): string => {
       if (epoch <= 0) {
-        return `rgb(0, 0, 255)`; // Blue at 0
+        return `rgb(0, 255, 0)`; // Green at 0
       } else if (epoch <= nowHalf) {
-        // Transition from blue to purple (0 to NOW/2)
+        // Transition from green to yellow (0 to NOW/2)
         const t = epoch / nowHalf;
-        const r = Math.floor(128 * t);
-        const g = 0;
-        const b = Math.floor(255 - (127 * t));
+        const r = Math.floor(255 * t); // Red increases from 0 to 255
+        const g = 255; // Green stays at max
+        const b = 0; // Blue stays at 0
         return `rgb(${r}, ${g}, ${b})`;
       } else if (epoch <= now) {
-        // Transition from purple to red (NOW/2 to NOW)
+        // Transition from yellow to red (NOW/2 to NOW)
         const t = (epoch - nowHalf) / (now - nowHalf);
-        const r = Math.floor(128 + (127 * t));
+        const r = 255; // Red stays at max
+        const g = Math.floor(255 - (255 * t)); // Green decreases from 255 to 0
+        const b = 0; // Blue stays at 0
+        return `rgb(${r}, ${g}, ${b})`;
+      } else if (epoch <= futureEnd) {
+        // Future: red to purple (now to now + X)
+        const t = (epoch - now) / X;
+        const r = Math.floor(255 - (127 * t)); // Red decreases from 255 to 128
         const g = 0;
-        const b = Math.floor(128 - (128 * t));
+        const b = Math.floor(128 * t); // Blue increases from 0 to 128
+        return `rgb(${r}, ${g}, ${b})`;
+      } else if (epoch <= distantFutureEnd) {
+        // Distant future: purple to black (now + X to now + X * 2)
+        const t = (epoch - futureEnd) / X;
+        const r = Math.floor(128 * (1 - t)); // Red decreases from 128 to 0
+        const g = 0;
+        const b = Math.floor(128 * (1 - t)); // Blue decreases from 128 to 0
         return `rgb(${r}, ${g}, ${b})`;
       } else {
-        // Future: purple
-        return `rgb(128, 0, 128)`;
+        // Beyond distant future: black
+        return `rgb(0, 0, 0)`;
       }
     };
     
@@ -314,8 +459,8 @@ export class EpochModule {
     // Create gradient stops - map key epochs to positions in the visible range
     const gradientStops: string[] = [];
     
-    // Add color stops at key points: 0, NOW/2, NOW
-    const keyEpochs = [0, nowHalf, now];
+    // Add color stops at key points: 0, NOW/2, NOW, NOW+X (future end), NOW+X*2 (distant future end)
+    const keyEpochs = [0, nowHalf, now, futureEnd, distantFutureEnd];
     const keyPositions: { epoch: number; position: number; color: string }[] = [];
     
     for (const epoch of keyEpochs) {
@@ -357,9 +502,9 @@ export class EpochModule {
     scaleHtml += `<div class="scale-bar-fill" style="background: linear-gradient(to right, ${gradientStops.join(', ')});"></div>`;
     scaleHtml += `</div>`;
     
-    // Get colors for markers
-    const colorA = getColorForEpoch(epochA);
-    const colorB = getColorForEpoch(epochB);
+    // Get colors for markers (using seconds for color calculation)
+    const colorA = getColorForEpoch(epochA_seconds);
+    const colorB = getColorForEpoch(epochB_seconds);
     
     // Add markers
     scaleHtml += `<div class="scale-markers">`;
@@ -424,6 +569,7 @@ export class EpochModule {
     this.saveToStorage();
     this.updateCalculation();
   }
+  
   
   private saveToStorage(): void {
     // Notify TileManager to save

@@ -190,11 +190,15 @@
         @apply text-base font-normal
         @apply text-gray-600 dark:text-gray-300
       
-      .epoch-copy-btn
-        @apply text-xs bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600
-        @apply text-gray-800 dark:text-white px-2 py-1 rounded
-        @apply cursor-pointer
-        @apply transition-colors
+      .epoch-actions
+        @apply flex gap-2
+        
+        .epoch-toggle-btn,
+        .epoch-copy-btn
+          @apply text-xs bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600
+          @apply text-gray-800 dark:text-white px-2 py-1 rounded
+          @apply cursor-pointer
+          @apply transition-colors
     
     .epoch-display
       @apply text-4xl font-mono font-bold
