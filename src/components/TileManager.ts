@@ -1,10 +1,11 @@
-import { Tile, TileSize, TimeTileData, EpochTileData, CalendarTileData, DateTileData, TimeMark } from '../types';
+import { Tile, TileSize, TimeTileData, EpochTileData, CalendarTileData, DateTileData, TimezoneConverterTileData, TimeMark } from '../types';
 import { TimeModule } from './TimeModule';
 import { EpochModule } from './EpochModule';
 import { CalendarModule } from './CalendarModule';
 import { DateModule } from './DateModule';
+import { TimezoneConverterModule } from './TimezoneConverterModule';
 
-type ModuleInstance = TimeModule | EpochModule | CalendarModule | DateModule | null;
+type ModuleInstance = TimeModule | EpochModule | CalendarModule | DateModule | TimezoneConverterModule | null;
 
 export class TileManager {
   private container: HTMLElement;
@@ -180,6 +181,8 @@ export class TileManager {
           (tileData.module as CalendarModule).updateData(updates.data as CalendarTileData);
         } else if (updatedTile.type === 'date') {
           (tileData.module as DateModule).updateData(updates.data as DateTileData);
+        } else if (updatedTile.type === 'timezone-converter') {
+          (tileData.module as TimezoneConverterModule).updateData(updates.data as TimezoneConverterTileData);
         }
       }
       this.saveToStorage();
@@ -217,6 +220,8 @@ export class TileManager {
       return new CalendarModule(element, tile.data as CalendarTileData);
     } else if (tile.type === 'date') {
       return new DateModule(element, tile.data as DateTileData);
+    } else if (tile.type === 'timezone-converter') {
+      return new TimezoneConverterModule(element, tile.data as TimezoneConverterTileData);
     }
     return null;
   }

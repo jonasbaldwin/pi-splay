@@ -97,7 +97,8 @@ function initializeAddTileModal(tileManager: TileManager): void {
     { type: 'time', label: 'Time', icon: '🕐' },
     { type: 'epoch', label: 'Epoch', icon: '⏱️' },
     { type: 'calendar', label: 'Calendar', icon: '📅' },
-    { type: 'date', label: 'Date', icon: '📆' }
+    { type: 'date', label: 'Date', icon: '📆' },
+    { type: 'timezone-converter', label: 'Timezone Converter', icon: '🌍' }
   ];
   
   // Populate tile type selection
@@ -173,6 +174,12 @@ function initializeAddTileModal(tileManager: TileManager): void {
     } else if (type === 'date') {
       configHtml = '<p class="config-info">Date tile displays today\'s date.</p>';
       selectedConfig = {};
+    } else if (type === 'timezone-converter') {
+      configHtml = '<p class="config-info">Timezone converter converts times between different timezones.</p>';
+      selectedConfig = {
+        sourceTimezone: 'local',
+        targetTimezones: []
+      };
     }
     
     tileConfig.innerHTML = configHtml;

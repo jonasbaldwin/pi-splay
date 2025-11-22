@@ -379,6 +379,118 @@
       .date-display
         @apply text-2xl
 
+  .timezone-converter-module
+    @apply flex flex-col h-full
+    @apply select-none
+    
+    .converter-header
+      @apply mb-4
+      
+      .converter-title
+        @apply text-lg font-semibold
+        @apply text-gray-900 dark:text-white
+    
+    .converter-inputs
+      @apply space-y-3 mb-4
+      
+      .input-group
+        @apply flex flex-col gap-1
+        
+        .input-label
+          @apply text-sm font-medium
+          @apply text-gray-700 dark:text-gray-300
+        
+        .input-with-clear
+          @apply relative
+          @apply flex items-center
+          
+          .input-field
+            @apply w-full
+            @apply bg-gray-100 dark:bg-gray-700
+            @apply text-gray-900 dark:text-white
+            @apply px-3 py-2 rounded-lg
+            @apply border border-gray-300 dark:border-gray-600
+            @apply text-sm
+            @apply focus:outline-none focus:ring-2 focus:ring-blue-500
+            @apply transition-colors
+            padding-right: 2.5rem
+          
+          .input-clear-btn
+            @apply absolute right-2
+            @apply text-gray-400 hover:text-gray-600 dark:hover:text-gray-300
+            @apply opacity-70 hover:opacity-100
+            @apply transition-opacity
+            @apply cursor-pointer
+            @apply text-lg
+            @apply leading-none
+            @apply px-1
+            @apply font-bold
+            @apply z-30
+            pointer-events: auto
+        
+        .input-field
+          @apply w-full
+          @apply bg-gray-100 dark:bg-gray-700
+          @apply text-gray-900 dark:text-white
+          @apply px-3 py-2 rounded-lg
+          @apply border border-gray-300 dark:border-gray-600
+          @apply text-sm
+          @apply focus:outline-none focus:ring-2 focus:ring-blue-500
+          @apply transition-colors
+      
+      .add-timezone-group
+        @apply mt-2
+    
+    .converter-results
+      @apply space-y-3
+      max-height: 300px
+      overflow-y: auto
+      
+      .converter-error,
+      .converter-empty
+        @apply text-sm text-gray-500 dark:text-gray-400
+        @apply italic
+        @apply text-center
+        @apply py-4
+      
+      .conversion-result
+        @apply bg-gray-50 dark:bg-gray-700
+        @apply rounded-lg
+        @apply p-3
+        @apply border border-gray-200 dark:border-gray-600
+        @apply relative
+        
+        .timezone-remove-btn
+          @apply absolute top-2 right-2
+          @apply text-white hover:text-red-300
+          @apply opacity-70 hover:opacity-100
+          @apply transition-opacity
+          @apply cursor-pointer
+          @apply text-lg
+          @apply leading-none
+          @apply px-1
+          @apply font-bold
+          @apply z-10
+        
+        .result-timezone
+          @apply flex items-center gap-2
+          @apply mb-1
+          
+          .result-label
+            @apply text-sm font-medium
+            @apply text-gray-700 dark:text-gray-300
+          
+          .dst-indicator
+            @apply text-xs
+            @apply bg-yellow-100 dark:bg-yellow-900
+            @apply text-yellow-800 dark:text-yellow-200
+            @apply px-2 py-0.5 rounded-full
+            @apply font-semibold
+        
+        .result-time
+          @apply text-xl font-mono font-bold
+          @apply text-gray-900 dark:text-white
+
   .calendar-module
     @apply flex flex-col h-full
     @apply select-none
