@@ -4,14 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pi-Splay Dashboard</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
     <link rel="stylesheet" href="./dist/styles.css">
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-white min-h-screen p-4">
     <div id="dashboard" class="dashboard-container">
         <!-- Tiles will be dynamically added here -->
     </div>
-    <button id="add-tile-btn" class="add-tile-btn" aria-label="Add tile">+</button>
-    <button id="edit-mode-btn" class="edit-mode-btn" aria-label="Edit mode">✏️</button>
+    <button id="edit-mode-btn" class="edit-mode-btn" aria-label="Edit mode">⚙️</button>
     <div id="tile-modal" class="tile-modal">
         <div class="tile-modal-content">
             <div class="tile-modal-header">
@@ -32,6 +34,9 @@
             </div>
         </div>
     </div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
     <script src="./dist/main.js"></script>
 </body>
 </html>

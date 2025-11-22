@@ -1,11 +1,12 @@
-import { Tile, TileSize, TimeTileData, EpochTileData, CalendarTileData, DateTileData, TimezoneConverterTileData, TimeMark } from '../types';
+import { Tile, TileSize, TimeTileData, EpochTileData, CalendarTileData, DateTileData, TimezoneConverterTileData, MapTileData, TimeMark } from '../types';
 import { TimeModule } from './TimeModule';
 import { EpochModule } from './EpochModule';
 import { CalendarModule } from './CalendarModule';
 import { DateModule } from './DateModule';
 import { TimezoneConverterModule } from './TimezoneConverterModule';
+import { MapModule } from './MapModule';
 
-type ModuleInstance = TimeModule | EpochModule | CalendarModule | DateModule | TimezoneConverterModule | null;
+type ModuleInstance = TimeModule | EpochModule | CalendarModule | DateModule | TimezoneConverterModule | MapModule | null;
 
 export class TileManager {
   private container: HTMLElement;
@@ -23,7 +24,6 @@ export class TileManager {
 
   constructor(container: HTMLElement) {
     this.container = container;
-    this.addTileBtn = document.getElementById('add-tile-btn');
     this.editModeBtn = document.getElementById('edit-mode-btn');
     this.initializeDragAndDrop();
     this.initializeMouseDragAndDrop();
@@ -53,19 +53,63 @@ export class TileManager {
       this.container.querySelectorAll('[data-tile-id]').forEach(tile => {
         (tile as HTMLElement).setAttribute('draggable', 'true');
         tile.classList.add('edit-mode');
+        // Get or create remove button
+        let removeBtn = tile.querySelector('.tile-remove-btn') as HTMLElement;
+        if (!removeBtn) {
+          // Create button if it doesn't exist (for tiles loaded from storage)
+          const tileId = tile.getAttribute('data-tile-id');
+          if (tileId) {
+            removeBtn = document.createElement('button');
+            removeBtn.className = 'tile-remove-btn';
+            removeBtn.innerHTML = '×';
+            removeBtn.setAttribute('aria-label', 'Remove tile');
+            removeBtn.style.zIndex = '9999';
+            removeBtn.style.position = 'absolute';
+            removeBtn.style.top = '1.75rem';
+            removeBtn.style.left = '1.75rem';
+            
+            const handleRemove = (e: Event) => {
+              e.stopPropagation();
+              e.preventDefault();
+              this.removeTile(tileId);
+            };
+            
+            removeBtn.addEventListener('click', handleRemove);
+            removeBtn.addEventListener('touchend', handleRemove);
+            tile.appendChild(removeBtn);
+          }
+        }
+        if (removeBtn) {
+          removeBtn.style.display = 'flex';
+          removeBtn.style.visibility = 'visible';
+          removeBtn.style.opacity = '1';
+          removeBtn.style.zIndex = '9999';
+          removeBtn.style.position = 'absolute';
+          removeBtn.style.top = '1.75rem';
+          removeBtn.style.left = '1.75rem';
+          // Move to end of tile element to ensure it's on top
+          tile.appendChild(removeBtn);
+        }
       });
       // Show all drop zones when entering edit mode
       this.showAllDropZones();
     } else {
       // Exit edit mode
       if (this.editModeBtn) {
-        this.editModeBtn.textContent = '✏️';
+        this.editModeBtn.textContent = '⚙️';
         this.editModeBtn.setAttribute('aria-label', 'Edit mode');
       }
       // Disable dragging on all tiles
       this.container.querySelectorAll('[data-tile-id]').forEach(tile => {
         (tile as HTMLElement).setAttribute('draggable', 'false');
         tile.classList.remove('edit-mode');
+        // Hide remove button
+        const removeBtn = tile.querySelector('.tile-remove-btn') as HTMLElement;
+        if (removeBtn) {
+          removeBtn.style.display = 'none';
+          removeBtn.style.visibility = 'hidden';
+          removeBtn.style.opacity = '0';
+        }
       });
       // Hide drop zones, drop indicator, and trash can
       this.hideAllDropZones();
@@ -76,6 +120,15 @@ export class TileManager {
       this.draggedElement = null;
       this.isMouseDragging = false;
       this.justFinishedDrag = false;
+    }
+    
+    // Dispatch event for modules to listen to
+    window.dispatchEvent(new CustomEvent('editModeChanged'));
+    
+    // Force a layout recalculation which helps with map rendering
+    if (this.isEditMode) {
+      // Trigger a reflow to help map tiles render
+      this.container.offsetHeight; // Force reflow
     }
   }
   
@@ -105,6 +158,12 @@ export class TileManager {
       }
     }
     
+    // Use pending grid position if available
+    if (this.pendingGridPosition && !tile.gridPosition) {
+      tile.gridPosition = { ...this.pendingGridPosition };
+      this.clearPendingGridPosition();
+    }
+    
     const tileElement = this.createTileElement(tile);
     const module = this.createModule(tile, tileElement);
     
@@ -112,6 +171,19 @@ export class TileManager {
     tileElement.setAttribute('draggable', this.isEditMode ? 'true' : 'false');
     if (this.isEditMode) {
       tileElement.classList.add('edit-mode');
+      // Explicitly show remove button if in edit mode
+      const removeBtn = tileElement.querySelector('.tile-remove-btn') as HTMLElement;
+      if (removeBtn) {
+        removeBtn.style.display = 'flex';
+        removeBtn.style.visibility = 'visible';
+        removeBtn.style.opacity = '1';
+        removeBtn.style.zIndex = '9999';
+        removeBtn.style.position = 'absolute';
+        removeBtn.style.top = '1.75rem';
+        removeBtn.style.left = '1.75rem';
+        // Move button to end of element so it's on top of module content
+        tileElement.appendChild(removeBtn);
+      }
     }
     
     // Set grid position if specified
@@ -123,6 +195,12 @@ export class TileManager {
     this.tiles.set(tile.id, { tile, module });
     this.container.appendChild(tileElement);
     this.saveToStorage();
+    
+    // Refresh drop zones if in edit mode
+    if (this.isEditMode) {
+      this.hideAllDropZones();
+      this.showAllDropZones();
+    }
   }
   
   private getExistingMarks(): TimeMark[] {
@@ -183,6 +261,8 @@ export class TileManager {
           (tileData.module as DateModule).updateData(updates.data as DateTileData);
         } else if (updatedTile.type === 'timezone-converter') {
           (tileData.module as TimezoneConverterModule).updateData(updates.data as TimezoneConverterTileData);
+        } else if (updatedTile.type === 'map') {
+          (tileData.module as MapModule).updateData(updates.data as MapTileData);
         }
       }
       this.saveToStorage();
@@ -197,15 +277,37 @@ export class TileManager {
     element.setAttribute('draggable', this.isEditMode ? 'true' : 'false');
     element.setAttribute('data-tile-type', tile.type);
     
-    // Add remove button
+    // Add remove button - append it last so it's on top
     const removeBtn = document.createElement('button');
     removeBtn.className = 'tile-remove-btn';
     removeBtn.innerHTML = '×';
     removeBtn.setAttribute('aria-label', 'Remove tile');
-    removeBtn.addEventListener('click', (e) => {
+    // Always create button, visibility controlled by edit mode
+    if (!this.isEditMode) {
+      removeBtn.style.display = 'none';
+    } else {
+      removeBtn.style.display = 'flex';
+      removeBtn.style.visibility = 'visible';
+      removeBtn.style.opacity = '1';
+    }
+    // Set explicit z-index to ensure it's above everything
+    removeBtn.style.zIndex = '9999';
+    removeBtn.style.position = 'absolute';
+    removeBtn.style.top = '1.75rem';
+    removeBtn.style.left = '1.75rem';
+    
+    // Handle both click and touch events
+    const handleRemove = (e: Event) => {
       e.stopPropagation();
+      e.preventDefault();
       this.removeTile(tile.id);
-    });
+    };
+    
+    removeBtn.addEventListener('click', handleRemove);
+    removeBtn.addEventListener('touchend', handleRemove);
+    
+    // Append button last so it's on top of module content
+    // We'll append it after module is created, but for now append it
     element.appendChild(removeBtn);
     
     return element;
@@ -222,6 +324,8 @@ export class TileManager {
       return new DateModule(element, tile.data as DateTileData);
     } else if (tile.type === 'timezone-converter') {
       return new TimezoneConverterModule(element, tile.data as TimezoneConverterTileData);
+    } else if (tile.type === 'map') {
+      return new MapModule(element, tile.data as MapTileData);
     }
     return null;
   }
@@ -300,6 +404,7 @@ export class TileManager {
     
     this.draggedElement = null;
     this.draggedIndex = -1;
+    this.lastHighlightedGridPos = null;
     
     this.hideDropIndicator();
     this.hideAllDropZones();
@@ -352,18 +457,12 @@ export class TileManager {
     if (this.trashCan) {
       this.trashCan.style.display = 'flex';
     }
-    if (this.addTileBtn) {
-      this.addTileBtn.style.display = 'none';
-    }
   }
   
   private hideTrashCan(): void {
     if (this.trashCan) {
       this.trashCan.style.display = 'none';
       this.trashCan.classList.remove('trash-can-hovered');
-    }
-    if (this.addTileBtn) {
-      this.addTileBtn.style.display = 'flex';
     }
   }
   
@@ -388,14 +487,48 @@ export class TileManager {
       return null;
     }
     
-    // Calculate grid position
+    // Try to find the drop zone element that contains the cursor position (most accurate)
+    // Check all drop zones to find which one contains the cursor
+    // This is more reliable than elementFromPoint which might hit the dragged element
+    for (const dropZone of this.dropZones) {
+      const zoneRect = dropZone.getBoundingClientRect();
+      if (clientX >= zoneRect.left && clientX <= zoneRect.right &&
+          clientY >= zoneRect.top && clientY <= zoneRect.bottom) {
+        const dropPos = dropZone.getAttribute('data-drop-pos');
+        if (dropPos) {
+          const [dropCol, dropRow] = dropPos.split(',').map(Number);
+          return { col: dropCol, row: dropRow };
+        }
+      }
+    }
+    
+    // Also try elementFromPoint as a fallback (might work if dragged element is transparent)
+    const elementAtPoint = document.elementFromPoint(clientX, clientY);
+    if (elementAtPoint) {
+      const dropZone = elementAtPoint.closest('.drop-zone') as HTMLElement;
+      if (dropZone) {
+        const dropPos = dropZone.getAttribute('data-drop-pos');
+        if (dropPos) {
+          const [dropCol, dropRow] = dropPos.split(',').map(Number);
+          return { col: dropCol, row: dropRow };
+        }
+      }
+    }
+    
+    // Fallback: calculate grid position relative to container
+    // Account for scroll by using getBoundingClientRect (already accounts for scroll)
     const tileWidth = 500;
     
-    const x = clientX - containerRect.left - 16; // Account for px-4 padding
+    // Calculate position relative to container's top-left corner (accounting for padding)
+    // The container has px-4 (16px) padding
+    const x = clientX - containerRect.left - 16;
     const y = clientY - containerRect.top;
     
-    // Ensure non-negative
+    // Calculate column: account for grid gap between columns
     const col = Math.max(0, Math.floor(x / (tileWidth + gridGap)));
+    
+    // Calculate row: use a simple formula based on grid structure
+    // Each row is tileHeight + gridGap tall
     const row = Math.max(0, Math.floor(y / (tileHeight + gridGap)));
     
     return { col, row };
@@ -404,9 +537,9 @@ export class TileManager {
   private dropIndicator: HTMLElement | null = null;
   private dropZones: HTMLElement[] = [];
   private trashCan: HTMLElement | null = null;
-  private addTileBtn: HTMLElement | null = null;
   private editModeBtn: HTMLElement | null = null;
   private isEditMode: boolean = false;
+  private lastHighlightedGridPos: { col: number; row: number } | null = null;
   
   private showDropIndicator(gridPos: { col: number; row: number }): void {
     // Remove existing indicator
@@ -467,15 +600,49 @@ export class TileManager {
           zone.style.gridColumn = `${col + 1} / span 1`;
           zone.style.gridRow = `${row + 1} / span 1`;
           zone.setAttribute('data-drop-pos', key);
-          // Prevent clicks on drop zones from triggering tile moves
+          // Make drop zones clickable in edit mode
+          zone.style.pointerEvents = 'auto';
+          zone.style.cursor = 'pointer';
+          // Prevent clicks on drop zones from triggering tile moves during drag
           zone.addEventListener('mousedown', (e) => {
-            e.stopPropagation();
+            // Only prevent if we're currently dragging
+            if (this.draggedElement) {
+              e.stopPropagation();
+            }
+          });
+          // Handle click on drop zone to show tile modal
+          zone.addEventListener('click', (e) => {
+            // Only handle click if not dragging
+            if (!this.draggedElement && !this.isMouseDragging && !this.isTouchDragging) {
+              e.stopPropagation();
+              const dropPos = zone.getAttribute('data-drop-pos');
+              if (dropPos) {
+                const [col, row] = dropPos.split(',').map(Number);
+                this.showAddTileModalAtPosition({ x: col, y: row });
+              }
+            }
           });
           this.container.appendChild(zone);
           this.dropZones.push(zone);
         }
       }
     }
+  }
+  
+  private pendingGridPosition: { x: number; y: number } | null = null;
+  
+  private showAddTileModalAtPosition(gridPosition: { x: number; y: number }): void {
+    this.pendingGridPosition = gridPosition;
+    // Dispatch event to show modal
+    window.dispatchEvent(new CustomEvent('showAddTileModal', { detail: { gridPosition } }));
+  }
+  
+  public getPendingGridPosition(): { x: number; y: number } | null {
+    return this.pendingGridPosition;
+  }
+  
+  public clearPendingGridPosition(): void {
+    this.pendingGridPosition = null;
   }
   
   private hideAllDropZones(): void {
@@ -488,6 +655,9 @@ export class TileManager {
   }
   
   private highlightHoveredDropZone(gridPos: { col: number; row: number }): void {
+    // Store the highlighted position for use on drop
+    this.lastHighlightedGridPos = gridPos;
+    
     // Reset all zones to grey
     this.dropZones.forEach(zone => {
       zone.classList.remove('drop-zone-hovered');
@@ -544,10 +714,13 @@ export class TileManager {
         this.removeTile(tileId);
       }
       this.hideTrashCan();
+      this.lastHighlightedGridPos = null;
       return;
     }
     
-    const gridPos = this.getGridPositionFromEvent(e);
+    // Use the last highlighted position if available (most accurate)
+    // Otherwise fall back to calculating from event
+    const gridPos = this.lastHighlightedGridPos || this.getGridPositionFromEvent(e);
     if (gridPos) {
       // Position tile at grid coordinates
       const tileId = this.draggedElement.getAttribute('data-tile-id');
@@ -566,6 +739,7 @@ export class TileManager {
     }
     
     this.hideTrashCan();
+    this.lastHighlightedGridPos = null;
     
     // Remove dragover from all tiles
     this.container.querySelectorAll('.tile').forEach(tile => {
@@ -649,6 +823,12 @@ export class TileManager {
       return;
     }
     
+    // Don't start drag if clicking on map container (but allow drag from map itself)
+    if (target.closest('.map-container') || target.closest('.leaflet-container')) {
+      // Allow drag from map in edit mode
+      // The map interactions are disabled in edit mode, so this should work
+    }
+    
     this.mouseStartY = e.clientY;
     this.mouseStartX = e.clientX;
     this.draggedElement = tile;
@@ -669,8 +849,8 @@ export class TileManager {
       this.isMouseDragging = true;
       this.draggedElement.classList.add('dragging');
       this.showTrashCan();
-      // Hide drop zones during drag to show only the indicator
-      this.hideAllDropZones();
+      // Show drop zones during drag for accurate positioning
+      this.showAllDropZones();
       e.preventDefault();
     }
     
@@ -720,7 +900,9 @@ export class TileManager {
           this.removeTile(tileId);
         }
       } else if (tileId) {
-        const gridPos = this.getGridPositionFromEvent(e);
+        // Use the last highlighted position if available (most accurate)
+        // Otherwise fall back to calculating from event
+        const gridPos = this.lastHighlightedGridPos || this.getGridPositionFromEvent(e);
         
         if (gridPos) {
           const tileData = this.tiles.get(tileId);
@@ -748,6 +930,7 @@ export class TileManager {
       // Always hide drop indicator and trash can
       this.hideDropIndicator();
       this.hideTrashCan();
+      this.lastHighlightedGridPos = null;
       
       // Re-show drop zones since we're still in edit mode
       if (this.isEditMode) {
@@ -788,6 +971,9 @@ export class TileManager {
     if (target.closest('option') || target.closest('label')) {
       return;
     }
+    
+    // Map container clicks are allowed for dragging in edit mode
+    // (map interactions are disabled in edit mode)
     
     const touch = e.touches[0];
     this.touchStartY = touch.clientY;
@@ -845,9 +1031,12 @@ export class TileManager {
         if (tileId) {
           this.removeTile(tileId);
         }
+        this.lastHighlightedGridPos = null;
       } else {
         const touch = e.changedTouches[0];
-        const gridPos = this.getGridPositionFromEvent(e);
+        // Use the last highlighted position if available (most accurate)
+        // Otherwise fall back to calculating from event
+        const gridPos = this.lastHighlightedGridPos || this.getGridPositionFromEvent(e);
         
         if (gridPos) {
           // Position tile at grid coordinates
@@ -875,6 +1064,7 @@ export class TileManager {
       this.hideDropIndicator();
       this.hideAllDropZones();
       this.hideTrashCan();
+      this.lastHighlightedGridPos = null;
     }
     
     this.draggedElement.classList.remove('dragging');

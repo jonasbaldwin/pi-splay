@@ -36,7 +36,6 @@
       @apply bg-gray-100 dark:bg-gray-800 bg-opacity-20 dark:bg-opacity-20
       @apply rounded-lg
       min-height: 200px
-      pointer-events: none
       transition: all 0.2s ease
       @apply z-30
       border-radius: 40px
@@ -69,6 +68,9 @@
         z-index: 1
         border-radius: 40px
         animation: pulse-fog 2s ease-in-out infinite
+      
+      .tile-remove-btn
+        display: flex !important
     
     &.tile-s
       grid-column: span 1
@@ -93,16 +95,27 @@
       @apply ring-2 ring-blue-500
     
     .tile-remove-btn
-      @apply absolute top-2 right-2
-      @apply bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700
+      position: absolute !important
+      top: 1.75rem !important
+      left: 1.75rem !important
+      @apply bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700
       @apply text-white font-bold
       @apply w-8 h-8 rounded-full
       @apply flex items-center justify-center
       @apply cursor-pointer
       @apply transition-colors
-      @apply z-10
-      font-size: 1.5rem
+      z-index: 9999 !important
+      font-size: 1.5rem !important
       line-height: 1
+      pointer-events: auto !important
+      -webkit-tap-highlight-color: transparent
+      display: none
+      
+      // Only show when tile is in edit mode
+      .tile.edit-mode &
+        display: flex !important
+        visibility: visible !important
+        opacity: 1 !important
 
   .time-module
     @apply flex flex-col h-full
@@ -628,20 +641,119 @@
             @apply text-xs
             @apply whitespace-nowrap
 
-  .add-tile-btn
-    @apply fixed bottom-6 right-6
-    @apply bg-blue-600 hover:bg-blue-700
-    @apply text-white font-bold
-    @apply w-16 h-16 rounded-full
-    @apply flex items-center justify-center
-    @apply cursor-pointer
-    @apply transition-colors
-    @apply shadow-lg
-    @apply z-40
-    font-size: 2rem
-  
+  .map-module
+    @apply flex flex-col h-full
+    @apply select-none
+    
+    .map-controls
+      @apply mb-4
+      @apply space-y-3
+      
+      .map-control-group
+        @apply flex flex-col gap-2
+        
+        .map-control-label
+          @apply text-sm font-semibold
+          @apply text-gray-700 dark:text-gray-300
+        
+        .map-location-input
+          @apply w-full
+          @apply bg-gray-100 dark:bg-gray-700
+          @apply text-gray-900 dark:text-white
+          @apply px-3 py-2 rounded
+          @apply border border-gray-300 dark:border-gray-600
+          @apply text-sm
+          @apply focus:outline-none focus:ring-2 focus:ring-blue-500
+          @apply placeholder-gray-400 dark:placeholder-gray-500
+        
+        .map-search-btn
+          @apply text-xs bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700
+          @apply text-white px-3 py-2 rounded-full
+          @apply cursor-pointer
+          @apply transition-colors
+          @apply font-semibold
+          @apply self-start
+        
+        .map-coords-inputs
+          @apply flex gap-2 items-end
+          
+          .map-coord-input
+            @apply flex-1
+            @apply bg-gray-100 dark:bg-gray-700
+            @apply text-gray-900 dark:text-white
+            @apply px-3 py-2 rounded
+            @apply border border-gray-300 dark:border-gray-600
+            @apply font-mono text-sm
+            @apply focus:outline-none focus:ring-2 focus:ring-blue-500
+            @apply placeholder-gray-400 dark:placeholder-gray-500
+        
+        .map-go-btn
+          @apply text-xs bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700
+          @apply text-white px-3 py-2 rounded-full
+          @apply cursor-pointer
+          @apply transition-colors
+          @apply font-semibold
+      
+      .map-info
+        @apply space-y-1
+        
+        .map-coords-display
+          @apply text-xs font-mono
+          @apply text-gray-600 dark:text-gray-400
+        
+        .map-location-display
+          @apply text-xs
+          @apply text-gray-600 dark:text-gray-400
+          @apply break-words
+    
+    .map-container
+      @apply flex-1
+      @apply min-h-[300px]
+      @apply rounded-lg
+      @apply overflow-hidden
+      @apply border border-gray-300 dark:border-gray-600
+      position: relative
+      z-index: 10
+      
+      // Ensure map is visible even in edit mode
+      .tile.edit-mode &
+        z-index: 10
+        position: relative
+      
+      .map-error
+        @apply flex items-center justify-center
+        @apply h-full
+        @apply text-gray-600 dark:text-gray-400
+        @apply text-sm
+      
+      // Leaflet map styles
+      .leaflet-container
+        @apply bg-gray-100 dark:bg-gray-800
+        height: 100%
+        width: 100%
+        z-index: 0
+        
+        .leaflet-control-zoom
+          @apply border-gray-300 dark:border-gray-600
+          
+          a
+            @apply bg-white dark:bg-gray-700
+            @apply text-gray-900 dark:text-white
+            @apply border-gray-300 dark:border-gray-600
+            
+            &:hover
+              @apply bg-gray-100 dark:bg-gray-600
+        
+        .leaflet-popup-content-wrapper
+          @apply bg-white dark:bg-gray-800
+          @apply text-gray-900 dark:text-white
+          @apply rounded-lg
+        
+        .leaflet-popup-tip
+          @apply bg-white dark:bg-gray-800
+
   .edit-mode-btn
-    @apply fixed bottom-6 right-28
+    @apply fixed bottom-6 right-6
     @apply bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-700
     @apply text-gray-800 dark:text-white font-bold
     @apply w-16 h-16 rounded-full

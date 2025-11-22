@@ -81,7 +81,6 @@ function initializeDashboard(): void {
 }
 
 function initializeAddTileModal(tileManager: TileManager): void {
-  const addBtn = document.getElementById('add-tile-btn');
   const modal = document.getElementById('tile-modal');
   const closeBtn = modal?.querySelector('.modal-close-btn');
   const cancelBtn = modal?.querySelector('.btn-cancel');
@@ -98,7 +97,8 @@ function initializeAddTileModal(tileManager: TileManager): void {
     { type: 'epoch', label: 'Epoch', icon: '⏱️' },
     { type: 'calendar', label: 'Calendar', icon: '📅' },
     { type: 'date', label: 'Date', icon: '📆' },
-    { type: 'timezone-converter', label: 'Timezone Converter', icon: '🌍' }
+    { type: 'timezone-converter', label: 'Timezone Converter', icon: '🌍' },
+    { type: 'map', label: 'World Map', icon: '🗺️' }
   ];
   
   // Populate tile type selection
@@ -180,6 +180,9 @@ function initializeAddTileModal(tileManager: TileManager): void {
         sourceTimezone: 'local',
         targetTimezones: []
       };
+    } else if (type === 'map') {
+      configHtml = '<p class="config-info">World map tile - tap to get coordinates, search locations, or enter coordinates.</p>';
+      selectedConfig = {};
     }
     
     tileConfig.innerHTML = configHtml;
@@ -200,9 +203,12 @@ function initializeAddTileModal(tileManager: TileManager): void {
     }
   }
   
-  // Open modal
-  addBtn?.addEventListener('click', () => {
+  // Function to open modal
+  const openModal = (clearPendingPosition: boolean = false) => {
     if (modal) {
+      if (clearPendingPosition) {
+        tileManager.clearPendingGridPosition();
+      }
       modal.classList.add('active');
       selectedTileType = null;
       selectedConfig = {};
@@ -214,12 +220,19 @@ function initializeAddTileModal(tileManager: TileManager): void {
       }
       if (addTileBtn) addTileBtn.disabled = true;
     }
+  };
+  
+  // Listen for custom event to show modal when clicking drop zone
+  window.addEventListener('showAddTileModal', () => {
+    openModal();
   });
   
   // Close modal
   const closeModal = () => {
     if (modal) {
       modal.classList.remove('active');
+      // Clear pending grid position if modal is closed without adding a tile
+      tileManager.clearPendingGridPosition();
     }
   };
   
@@ -241,6 +254,7 @@ function initializeAddTileModal(tileManager: TileManager): void {
         data: selectedConfig
       };
       tileManager.addTile(newTile);
+      // clearPendingGridPosition is called inside addTile, so we don't need to call it here
       closeModal();
     }
   });
