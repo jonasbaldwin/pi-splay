@@ -22,9 +22,18 @@ function initializeDashboard(): void {
   const tileManager = new TileManager(container);
   const tabManager = new TabManager(tabBar);
 
-  // Initialize with default tiles: local time, UTC time, epoch time, and calendar
+  // Initialize with default tiles for new users
   const today = new Date();
   const defaultTiles: Tile[] = [
+    // Row 0: Date Module
+    {
+      id: generateId(),
+      type: 'date',
+      size: 's',
+      data: {},
+      gridPosition: { x: 0, y: 0 }
+    },
+    // Row 1: TimeModule(local), TimeModule(UTC), TimeModule(Berlin)
     {
       id: generateId(),
       type: 'time',
@@ -32,7 +41,8 @@ function initializeDashboard(): void {
       data: {
         timezone: 'local',
         marks: []
-      }
+      },
+      gridPosition: { x: 0, y: 1 }
     },
     {
       id: generateId(),
@@ -41,16 +51,20 @@ function initializeDashboard(): void {
       data: {
         timezone: 'utc',
         marks: []
-      }
+      },
+      gridPosition: { x: 1, y: 1 }
     },
     {
       id: generateId(),
-      type: 'epoch',
+      type: 'time',
       size: 's',
       data: {
+        timezone: 'Europe/Berlin',
         marks: []
-      }
+      },
+      gridPosition: { x: 2, y: 1 }
     },
+    // Row 2: CalendarModule, EpochModule, QuickNotesModule
     {
       id: generateId(),
       type: 'calendar',
@@ -59,13 +73,26 @@ function initializeDashboard(): void {
         selectedDates: [],
         currentMonth: today.getMonth(),
         currentYear: today.getFullYear()
-      }
+      },
+      gridPosition: { x: 0, y: 2 }
     },
     {
       id: generateId(),
-      type: 'date',
+      type: 'epoch',
       size: 's',
-      data: {}
+      data: {
+        marks: []
+      },
+      gridPosition: { x: 1, y: 2 }
+    },
+    {
+      id: generateId(),
+      type: 'quick-notes',
+      size: 's',
+      data: {
+        notes: []
+      },
+      gridPosition: { x: 2, y: 2 }
     }
   ];
 
