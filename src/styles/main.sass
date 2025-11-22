@@ -1101,6 +1101,22 @@
     @media (max-width: 640px)
       @apply bottom-32
   
+  .theme-toggle-btn
+    @apply fixed bottom-24 right-28
+    @apply bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-700
+    @apply text-gray-800 dark:text-white font-bold
+    @apply w-16 h-16 rounded-full
+    @apply flex items-center justify-center
+    @apply cursor-pointer
+    @apply transition-colors
+    @apply shadow-lg
+    @apply z-40
+    font-size: 1.5rem
+    
+    @media (max-width: 640px)
+      @apply bottom-32
+      @apply right-24
+  
   .edit-mode-note
     @apply fixed bottom-24 left-1/2 transform -translate-x-1/2
     @apply bg-gray-800 dark:bg-gray-700
@@ -1257,6 +1273,10 @@
           .tab-rename-btn
             @apply text-white
             @apply hover:bg-blue-700 dark:hover:bg-blue-500
+          
+          .tab-delete-btn
+            @apply text-white
+            @apply hover:bg-white hover:bg-opacity-20
         
         .tab-name
           @apply flex-1
@@ -1298,9 +1318,8 @@
           @apply hover:bg-gray-300 dark:hover:bg-gray-600
           
         .tab-delete-btn
-          @apply text-red-600 dark:text-red-400
-          @apply hover:bg-red-100 dark:hover:bg-red-900
-          @apply hover:text-red-700 dark:hover:text-red-300
+          @apply text-gray-700 dark:text-white
+          @apply hover:bg-gray-200 dark:hover:bg-white dark:hover:bg-opacity-20
       
       .tab-add-btn
         @apply w-8 h-8

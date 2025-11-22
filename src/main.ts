@@ -1,6 +1,7 @@
 import { TileManager } from './components/TileManager';
 import { TabManager } from './components/TabManager';
 import { Tile } from './types';
+import { initializeTheme } from './utils/theme';
 
 function generateId(): string {
   return `tile-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -308,6 +309,9 @@ function initializeAddTileModal(tileManager: TileManager): void {
     }
   });
 }
+
+// Initialize theme first (before DOM is ready to avoid flash)
+initializeTheme();
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {

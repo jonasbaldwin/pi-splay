@@ -8,6 +8,7 @@ import { MapModule } from './MapModule';
 import { FormatHelperModule } from './FormatHelperModule';
 import { QuickNotesModule } from './QuickNotesModule';
 import { NumberConverterModule } from './NumberConverterModule';
+import { getThemePreference, setThemePreference, applyTheme, ThemePreference } from '../utils/theme';
 
 type ModuleInstance = TimeModule | EpochModule | CalendarModule | DateModule | TimezoneConverterModule | MapModule | FormatHelperModule | QuickNotesModule | NumberConverterModule | null;
 
@@ -30,10 +31,12 @@ export class TileManager {
     this.container = container;
     this.editModeBtn = document.getElementById('edit-mode-btn');
     this.editModeNote = document.getElementById('edit-mode-note');
+    this.themeToggleBtn = document.getElementById('theme-toggle-btn');
     this.initializeDragAndDrop();
     this.initializeMouseDragAndDrop();
     this.initializeTouchDragAndDrop();
     this.initializeEditMode();
+    this.initializeThemeToggle();
   }
 
   public setOnTilesChange(callback: (tiles: Tile[]) => void): void {
@@ -63,6 +66,48 @@ export class TileManager {
       });
     }
   }
+
+  private initializeThemeToggle(): void {
+    if (this.themeToggleBtn) {
+      this.themeToggleBtn.addEventListener('click', () => {
+        this.toggleTheme();
+      });
+    }
+    this.updateThemeToggleIcon();
+  }
+
+  private toggleTheme(): void {
+    const currentPreference = getThemePreference();
+    let nextPreference: ThemePreference;
+    
+    // Cycle through: system -> light -> dark -> system
+    if (currentPreference === 'system') {
+      nextPreference = 'light';
+    } else if (currentPreference === 'light') {
+      nextPreference = 'dark';
+    } else {
+      nextPreference = 'system';
+    }
+    
+    setThemePreference(nextPreference);
+    this.updateThemeToggleIcon();
+  }
+
+  private updateThemeToggleIcon(): void {
+    if (!this.themeToggleBtn) return;
+    
+    const preference = getThemePreference();
+    if (preference === 'light') {
+      this.themeToggleBtn.textContent = '☀️';
+      this.themeToggleBtn.setAttribute('aria-label', 'Theme: Light (click to switch to Dark)');
+    } else if (preference === 'dark') {
+      this.themeToggleBtn.textContent = '🌙';
+      this.themeToggleBtn.setAttribute('aria-label', 'Theme: Dark (click to switch to System)');
+    } else {
+      this.themeToggleBtn.textContent = '🌓';
+      this.themeToggleBtn.setAttribute('aria-label', 'Theme: System (click to switch to Light)');
+    }
+  }
   
   private toggleEditMode(): void {
     this.isEditMode = !this.isEditMode;
@@ -72,6 +117,10 @@ export class TileManager {
       if (this.editModeBtn) {
         this.editModeBtn.textContent = '✕';
         this.editModeBtn.setAttribute('aria-label', 'Exit edit mode');
+      }
+      // Show theme toggle button
+      if (this.themeToggleBtn) {
+        this.themeToggleBtn.style.display = 'flex';
       }
       // Show edit mode note
       if (this.editModeNote) {
@@ -126,6 +175,10 @@ export class TileManager {
       if (this.editModeBtn) {
         this.editModeBtn.textContent = '⚙️';
         this.editModeBtn.setAttribute('aria-label', 'Edit mode');
+      }
+      // Hide theme toggle button
+      if (this.themeToggleBtn) {
+        this.themeToggleBtn.style.display = 'none';
       }
       // Hide edit mode note
       if (this.editModeNote) {
@@ -542,6 +595,7 @@ export class TileManager {
   private dropZones: HTMLElement[] = [];
   private editModeBtn: HTMLElement | null = null;
   private editModeNote: HTMLElement | null = null;
+  private themeToggleBtn: HTMLElement | null = null;
   private isEditMode: boolean = false;
   private lastHighlightedGridPos: { col: number; row: number } | null = null;
   

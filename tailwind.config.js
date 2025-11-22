@@ -4,7 +4,7 @@ module.exports = {
     "./index.html",
     "./src/**/*.{html,ts,js,sass}"
   ],
-  darkMode: 'media',
+  darkMode: 'class',
   theme: {
     extend: {
       spacing: {
