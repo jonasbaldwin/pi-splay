@@ -8,9 +8,9 @@ export interface TimeMark {
 
 export interface Tile {
   id: string;
-  type: 'time' | 'epoch' | 'calendar' | 'date' | 'timezone-converter' | 'map' | 'format-helper' | 'quick-notes';
+  type: 'time' | 'epoch' | 'calendar' | 'date' | 'timezone-converter' | 'map' | 'format-helper' | 'quick-notes' | 'number-converter';
   size: TileSize;
-  data: TimeTileData | EpochTileData | CalendarTileData | DateTileData | TimezoneConverterTileData | MapTileData | FormatHelperTileData | QuickNotesTileData;
+  data: TimeTileData | EpochTileData | CalendarTileData | DateTileData | TimezoneConverterTileData | MapTileData | FormatHelperTileData | QuickNotesTileData | NumberConverterTileData;
   gridPosition?: { x: number; y: number }; // Grid position for drag and drop
 }
 
@@ -62,5 +62,9 @@ export interface QuickNote {
 
 export interface QuickNotesTileData {
   notes: QuickNote[];
+}
+
+export interface NumberConverterTileData {
+  value?: number; // Stored decimal value
 }
 

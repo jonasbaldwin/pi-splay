@@ -100,7 +100,8 @@ function initializeAddTileModal(tileManager: TileManager): void {
     { type: 'timezone-converter', label: 'Timezone Converter', icon: '🌍' },
     { type: 'map', label: 'World Map', icon: '🗺️' },
     { type: 'format-helper', label: 'Date Formatter', icon: '📝' },
-    { type: 'quick-notes', label: 'Quick Notes', icon: '📝' }
+    { type: 'quick-notes', label: 'Quick Notes', icon: '📝' },
+    { type: 'number-converter', label: 'Number Converter', icon: '🔢' }
   ];
   
   // Populate tile type selection
@@ -191,6 +192,9 @@ function initializeAddTileModal(tileManager: TileManager): void {
     } else if (type === 'quick-notes') {
       configHtml = '<p class="config-info">Quick notes tile allows you to add and manage small notes with markdown support.</p>';
       selectedConfig = { notes: [] };
+    } else if (type === 'number-converter') {
+      configHtml = '<p class="config-info">Number converter converts between decimal, binary, hexadecimal, and octal formats.</p>';
+      selectedConfig = { value: 42 };
     }
     
     tileConfig.innerHTML = configHtml;

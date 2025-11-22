@@ -383,6 +383,71 @@
       .date-display
         @apply text-2xl
 
+  .number-converter-module
+    @apply flex flex-col h-full
+    @apply select-none
+    
+    .number-converter-header
+      @apply mb-4
+      
+      .number-converter-title
+        @apply text-lg font-semibold
+        @apply text-gray-900 dark:text-white
+    
+    .number-converter-inputs
+      @apply flex flex-col gap-3
+      
+      .number-input-group
+        @apply flex flex-col gap-1
+        
+        .number-input-label
+          @apply text-sm font-medium
+          @apply text-gray-700 dark:text-gray-300
+        
+        .number-input-container
+          @apply flex items-center gap-2
+          
+          .number-input-with-prefix
+            @apply flex items-stretch
+            @apply bg-gray-100 dark:bg-gray-700
+            @apply border border-gray-300 dark:border-gray-600
+            @apply rounded
+            @apply overflow-hidden
+            @apply flex-1
+            
+            .number-prefix
+              @apply px-2 py-2
+              @apply text-gray-600 dark:text-gray-400
+              @apply font-mono text-sm
+              @apply bg-gray-200 dark:bg-gray-800
+              @apply border-r border-gray-300 dark:border-gray-600
+              @apply select-none
+              @apply flex-shrink-0
+              @apply flex items-center justify-center
+              width: 3.5ch
+              min-height: 100%
+          
+          .number-copy-btn
+            @apply text-xs bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600
+            @apply text-gray-800 dark:text-white px-2 py-1 rounded-full
+            @apply cursor-pointer
+            @apply transition-colors
+            @apply flex-shrink-0
+        
+        .number-input
+          @apply w-full
+          @apply bg-gray-100 dark:bg-gray-700
+          @apply text-gray-900 dark:text-white
+          @apply px-3 py-2
+          @apply border-0
+          @apply font-mono text-sm
+          @apply focus:outline-none focus:ring-2 focus:ring-blue-500
+          @apply placeholder-gray-400 dark:placeholder-gray-500
+          
+          // When inside number-input-with-prefix, remove left padding
+          .number-input-with-prefix &
+            @apply px-2
+
   .format-helper-module
     @apply flex flex-col h-full
     @apply select-none
