@@ -27,6 +27,7 @@ export class TileManager {
   constructor(container: HTMLElement) {
     this.container = container;
     this.editModeBtn = document.getElementById('edit-mode-btn');
+    this.editModeNote = document.getElementById('edit-mode-note');
     this.initializeDragAndDrop();
     this.initializeMouseDragAndDrop();
     this.initializeTouchDragAndDrop();
@@ -49,6 +50,10 @@ export class TileManager {
       if (this.editModeBtn) {
         this.editModeBtn.textContent = '✕';
         this.editModeBtn.setAttribute('aria-label', 'Exit edit mode');
+      }
+      // Show edit mode note
+      if (this.editModeNote) {
+        this.editModeNote.style.display = 'block';
       }
       // Enable dragging on all tiles
       this.container.querySelectorAll('[data-tile-id]').forEach(tile => {
@@ -99,6 +104,10 @@ export class TileManager {
       if (this.editModeBtn) {
         this.editModeBtn.textContent = '⚙️';
         this.editModeBtn.setAttribute('aria-label', 'Edit mode');
+      }
+      // Hide edit mode note
+      if (this.editModeNote) {
+        this.editModeNote.style.display = 'none';
       }
       // Disable dragging on all tiles
       this.container.querySelectorAll('[data-tile-id]').forEach(tile => {
@@ -497,6 +506,7 @@ export class TileManager {
   private dropIndicator: HTMLElement | null = null;
   private dropZones: HTMLElement[] = [];
   private editModeBtn: HTMLElement | null = null;
+  private editModeNote: HTMLElement | null = null;
   private isEditMode: boolean = false;
   private lastHighlightedGridPos: { col: number; row: number } | null = null;
   

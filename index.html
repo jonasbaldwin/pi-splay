@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pi-Splay Dashboard</title>
+    <title>Developer Dashboard</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
      crossorigin=""/>
@@ -14,6 +14,9 @@
         <!-- Tiles will be dynamically added here -->
     </div>
     <button id="edit-mode-btn" class="edit-mode-btn" aria-label="Edit mode">⚙️</button>
+    <div id="edit-mode-note" class="edit-mode-note" style="display: none;">
+      Tap a cell to add a new Module
+    </div>
     <div id="tile-modal" class="tile-modal">
         <div class="tile-modal-content">
             <div class="tile-modal-header">
