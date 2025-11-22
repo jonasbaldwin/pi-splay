@@ -306,15 +306,15 @@ export class CalendarModule {
       const dateStr = this.formatDateDisplay(selected);
       const colorIndex = this.dateColors[0] || 0;
       const color = this.colorPalette[colorIndex % this.colorPalette.length];
-      const dateColorStyle = `color: ${color}; font-weight: bold;`;
+      const datePillStyle = `background-color: ${color}; color: white; font-weight: bold;`;
       
       let text = '';
       if (diffDays === 0) {
-        text = `<span style="${dateColorStyle}">[${dateStr}]</span>: Today`;
+        text = `<span class="date-pill" style="${datePillStyle}">${dateStr}</span>: Today`;
       } else if (diffDays > 0) {
-        text = `<span style="${dateColorStyle}">[${dateStr}]</span>: ${diffDays} day${diffDays !== 1 ? 's' : ''} from now`;
+        text = `<span class="date-pill" style="${datePillStyle}">${dateStr}</span>: ${diffDays} day${diffDays !== 1 ? 's' : ''} from now`;
       } else {
-        text = `<span style="${dateColorStyle}">[${dateStr}]</span>: ${Math.abs(diffDays)} day${Math.abs(diffDays) !== 1 ? 's' : ''} ago`;
+        text = `<span class="date-pill" style="${datePillStyle}">${dateStr}</span>: ${Math.abs(diffDays)} day${Math.abs(diffDays) !== 1 ? 's' : ''} ago`;
       }
       
       comparisonItems.push({ html: `<div class="comparison-item">${text}</div>`, order: 0 });
@@ -326,7 +326,7 @@ export class CalendarModule {
         const date1Str = this.formatDateDisplay(date1);
         const colorIndex1 = this.dateColors[i] || (i % this.colorPalette.length);
         const color1 = this.colorPalette[colorIndex1 % this.colorPalette.length];
-        const date1ColorStyle = `color: ${color1}; font-weight: bold;`;
+        const date1PillStyle = `background-color: ${color1}; color: white; font-weight: bold;`;
         
         if (i === 0) {
           // First date: compare to today
@@ -337,11 +337,11 @@ export class CalendarModule {
           
           let text = '';
           if (diffDays === 0) {
-            text = `<span style="${date1ColorStyle}">[${date1Str}]</span>: Today`;
+            text = `<span class="date-pill" style="${date1PillStyle}">${date1Str}</span>: Today`;
           } else if (diffDays > 0) {
-            text = `<span style="${date1ColorStyle}">[${date1Str}]</span>: ${diffDays} day${diffDays !== 1 ? 's' : ''} from now`;
+            text = `<span class="date-pill" style="${date1PillStyle}">${date1Str}</span>: ${diffDays} day${diffDays !== 1 ? 's' : ''} from now`;
           } else {
-            text = `<span style="${date1ColorStyle}">[${date1Str}]</span>: ${Math.abs(diffDays)} day${Math.abs(diffDays) !== 1 ? 's' : ''} ago`;
+            text = `<span class="date-pill" style="${date1PillStyle}">${date1Str}</span>: ${Math.abs(diffDays)} day${Math.abs(diffDays) !== 1 ? 's' : ''} ago`;
           }
           
           comparisonItems.push({ html: `<div class="comparison-item">${text}</div>`, order: i + 1 });
@@ -352,18 +352,18 @@ export class CalendarModule {
           const date2Str = this.formatDateDisplay(date2);
           const colorIndex2 = this.dateColors[i - 1] || ((i - 1) % this.colorPalette.length);
           const color2 = this.colorPalette[colorIndex2 % this.colorPalette.length];
-          const date2ColorStyle = `color: ${color2}; font-weight: bold;`;
+          const date2PillStyle = `background-color: ${color2}; color: white; font-weight: bold;`;
           
           const diffMs = date1.getTime() - date2.getTime();
           const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
           
           let text = '';
           if (diffDays === 0) {
-            text = `<span style="${date2ColorStyle}">[${date2Str}]</span> to <span style="${date1ColorStyle}">[${date1Str}]</span>: Same day`;
+            text = `<span class="date-pill" style="${date2PillStyle}">${date2Str}</span> to <span class="date-pill" style="${date1PillStyle}">${date1Str}</span>: Same day`;
           } else if (diffDays > 0) {
-            text = `<span style="${date2ColorStyle}">[${date2Str}]</span> to <span style="${date1ColorStyle}">[${date1Str}]</span>: ${diffDays} day${diffDays !== 1 ? 's' : ''}`;
+            text = `<span class="date-pill" style="${date2PillStyle}">${date2Str}</span> to <span class="date-pill" style="${date1PillStyle}">${date1Str}</span>: ${diffDays} day${diffDays !== 1 ? 's' : ''}`;
           } else {
-            text = `<span style="${date2ColorStyle}">[${date2Str}]</span> to <span style="${date1ColorStyle}">[${date1Str}]</span>: ${Math.abs(diffDays)} day${Math.abs(diffDays) !== 1 ? 's' : ''} earlier`;
+            text = `<span class="date-pill" style="${date2PillStyle}">${date2Str}</span> to <span class="date-pill" style="${date1PillStyle}">${date1Str}</span>: ${Math.abs(diffDays)} day${Math.abs(diffDays) !== 1 ? 's' : ''} earlier`;
           }
           
           comparisonItems.push({ html: `<div class="comparison-item">${text}</div>`, order: i + 1 });
