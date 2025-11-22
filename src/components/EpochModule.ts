@@ -16,6 +16,7 @@ export class EpochModule {
   private clockManager: ClockManager;
   private clockSubscriber: { onTick: () => void };
   private showMilliseconds: boolean = false;
+  private msIntervalId: number | null = null;
 
   constructor(element: HTMLElement, data: EpochTileData) {
     this.element = element;
@@ -25,14 +26,19 @@ export class EpochModule {
     // Create clock subscriber
     this.clockSubscriber = {
       onTick: () => {
-        this.updateEpoch();
+        // Only update epoch display from clock if not in milliseconds mode
+        // (milliseconds mode uses its own interval)
+        if (!this.showMilliseconds) {
+          this.updateEpochDisplay();
+        }
         this.updateCalculation();
       }
     };
     
     this.initialize();
-    this.updateEpoch(); // Initial update
+    this.updateEpochDisplay(); // Initial update
     this.clockManager.subscribe(this.clockSubscriber);
+    this.startMsIntervalIfNeeded();
   }
 
   private initialize(): void {
@@ -115,7 +121,7 @@ export class EpochModule {
       this.toggleEpochFormat();
     });
     
-    this.updateEpoch();
+    this.updateEpochDisplay();
     this.updateCalculation();
     
     // Add input handlers with validation
@@ -188,13 +194,29 @@ export class EpochModule {
     }
   }
 
-  private updateEpoch(): void {
+  private updateEpochDisplay(): void {
     if (this.showMilliseconds) {
       const epoch = Date.now();
       this.epochDisplay.textContent = epoch.toString();
     } else {
       const epoch = Math.floor(Date.now() / 1000);
       this.epochDisplay.textContent = epoch.toString();
+    }
+  }
+
+  private startMsIntervalIfNeeded(): void {
+    if (this.showMilliseconds && this.msIntervalId === null) {
+      // Start millisecond interval for epoch display updates
+      this.msIntervalId = window.setInterval(() => {
+        this.updateEpochDisplay();
+      }, 1);
+    }
+  }
+
+  private stopMsInterval(): void {
+    if (this.msIntervalId !== null) {
+      clearInterval(this.msIntervalId);
+      this.msIntervalId = null;
     }
   }
   
@@ -236,11 +258,18 @@ export class EpochModule {
       toggleBtn.textContent = this.showMilliseconds ? 'Seconds' : 'Milliseconds';
     }
     
+    // Start or stop millisecond interval based on mode
+    if (this.showMilliseconds) {
+      this.startMsIntervalIfNeeded();
+    } else {
+      this.stopMsInterval();
+    }
+    
     // Save the converted values
     this.saveInputs();
     
     // Update displays
-    this.updateEpoch();
+    this.updateEpochDisplay();
     this.updateCalculation();
   }
   
@@ -595,12 +624,13 @@ export class EpochModule {
     } else {
       this.input2.value = '';
     }
-    this.updateEpoch();
+    this.updateEpochDisplay();
     this.updateCalculation();
   }
 
   public destroy(): void {
     this.clockManager.unsubscribe(this.clockSubscriber);
+    this.stopMsInterval();
   }
 }
 
