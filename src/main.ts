@@ -349,8 +349,46 @@ function initializeAddTileModal(tileManager: TileManager): void {
   });
 }
 
+// Check localStorage availability
+function checkLocalStorageAvailability(): boolean {
+  try {
+    const testKey = '__localStorage_test__';
+    localStorage.setItem(testKey, 'test');
+    localStorage.removeItem(testKey);
+    return true;
+  } catch (e) {
+    console.error('🔵 DEBUG LOCALSTORAGE localStorage is not available:', e);
+    return false;
+  }
+}
+
 // Initialize theme first (before DOM is ready to avoid flash)
 initializeTheme();
+
+// Check localStorage before initializing
+if (!checkLocalStorageAvailability()) {
+  console.warn('🔵 DEBUG LOCALSTORAGE localStorage is not available. Layout changes will not be saved.');
+  // Show user-visible warning
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      showLocalStorageWarning();
+    });
+  } else {
+    showLocalStorageWarning();
+  }
+}
+
+function showLocalStorageWarning(): void {
+  const warning = document.createElement('div');
+  warning.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; background: #ff6b6b; color: white; padding: 1rem; text-align: center; z-index: 10000; font-family: sans-serif;';
+  warning.textContent = '⚠️ LocalStorage is not available. Layout changes will not be saved. This may be due to browser privacy settings or extensions.';
+  document.body.appendChild(warning);
+  
+  // Remove warning after 10 seconds
+  setTimeout(() => {
+    warning.remove();
+  }, 10000);
+}
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
