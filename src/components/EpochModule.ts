@@ -165,8 +165,8 @@ export class EpochModule {
     // Remove any whitespace
     const cleaned = value.trim();
     
-    // Check if it's a valid number (only digits)
-    if (!/^\d+$/.test(cleaned)) {
+    // Check if it's a valid number (optional minus sign followed by digits)
+    if (!/^-?\d+$/.test(cleaned)) {
       return null;
     }
     
@@ -178,8 +178,11 @@ export class EpochModule {
     const validated = this.validateEpochValue(value);
     
     if (value && validated === null) {
-      // Invalid input - remove non-numeric characters
-      input.value = value.replace(/\D/g, '');
+      // Invalid input - remove non-numeric characters except minus sign at the start
+      // Allow minus only at the beginning
+      const hasMinus = value.startsWith('-');
+      const cleaned = value.replace(/[^\d]/g, '');
+      input.value = hasMinus ? '-' + cleaned : cleaned;
     } else if (validated !== null && validated !== value) {
       input.value = validated;
     }
@@ -511,13 +514,13 @@ export class EpochModule {
     
     // Marker for A
     scaleHtml += `<div class="scale-marker scale-marker-a" style="left: ${posA}%;">`;
-    scaleHtml += `<div class="marker-label" style="color: ${colorA};">A</div>`;
+    scaleHtml += `<div class="marker-label marker-circle" style="color: white;">A</div>`;
     scaleHtml += `<div class="marker-line" style="background-color: ${colorA}; border-color: ${colorA};"></div>`;
     scaleHtml += `</div>`;
     
     // Marker for B
     scaleHtml += `<div class="scale-marker scale-marker-b" style="left: ${posB}%;">`;
-    scaleHtml += `<div class="marker-label" style="color: ${colorB};">B</div>`;
+    scaleHtml += `<div class="marker-label marker-circle" style="color: white;">B</div>`;
     scaleHtml += `<div class="marker-line" style="background-color: ${colorB}; border-color: ${colorB};"></div>`;
     scaleHtml += `</div>`;
     
