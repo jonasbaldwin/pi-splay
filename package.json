@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Touch-friendly modular dashboard",
   "scripts": {
-    "build": "npm run build:css && npm run build:js",
+    "build": "npm run build:favicon && npm run build:css && npm run build:js",
+    "build:favicon": "node scripts/generate-favicon.js",
     "build:css": "sass src/styles/main.sass dist/styles-temp.css --no-source-map && tailwindcss -i ./dist/styles-temp.css -o ./dist/styles.css --minify && rm dist/styles-temp.css",
     "build:js": "esbuild src/main.ts --bundle --format=iife --global-name=PiSplay --outfile=dist/main.js --minify --sourcemap",
     "build:ts": "tsc",
@@ -17,6 +18,7 @@
     "@types/node": "^20.10.0",
     "esbuild": "^0.27.0",
     "sass": "^1.69.5",
+    "sharp": "^0.33.0",
     "tailwindcss": "^3.4.0",
     "typescript": "^5.3.3"
   }
