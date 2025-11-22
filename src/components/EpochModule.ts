@@ -360,9 +360,12 @@ export class EpochModule {
     
     // Get colors for A and B
     // X = now (the value between 0 and now)
-    // Segments: 0→now (green→red), now→now+X (red→purple), now+X→now+X*2 (purple→black)
+    // Segments: pre-history (blue), 0→now (green→red), now→now+X (red→purple), now+X→now+X*2 (purple→black)
     const getColorForEpoch = (epoch: number): string => {
-      if (epoch <= now) {
+      if (epoch < 0) {
+        // Pre-history: blue for negative values
+        return `rgb(0, 0, 255)`; // Blue for pre-history
+      } else if (epoch <= now) {
         // Past or present: green to red (0 to now)
         const clampedEpoch = Math.max(0, Math.min(epoch, now));
         const proximityToNow = now > 0 ? clampedEpoch / now : 0;
@@ -448,7 +451,10 @@ export class EpochModule {
     
     // Get color for any epoch value
     const getColorForEpoch = (epoch: number): string => {
-      if (epoch <= 0) {
+      if (epoch < 0) {
+        // Pre-history: blue for negative values
+        return `rgb(0, 0, 255)`; // Blue for pre-history
+      } else if (epoch === 0) {
         return `rgb(0, 255, 0)`; // Green at 0
       } else if (epoch <= nowHalf) {
         // Transition from green to yellow (0 to NOW/2)
@@ -491,7 +497,7 @@ export class EpochModule {
     // Create gradient stops - map key epochs to positions in the visible range
     const gradientStops: string[] = [];
     
-    // Add color stops at key points: 0, NOW/2, NOW, NOW+X (future end), NOW+X*2 (distant future end)
+    // Add color stops at key points: negative values (pre-history), 0, NOW/2, NOW, NOW+X (future end), NOW+X*2 (distant future end)
     const keyEpochs = [0, nowHalf, now, futureEnd, distantFutureEnd];
     const keyPositions: { epoch: number; position: number; color: string }[] = [];
     
@@ -503,15 +509,22 @@ export class EpochModule {
       }
     }
     
-    // Add start color if scale starts before 0
+    // Add start color if scale starts before 0 (pre-history section)
     if (scaleLeft < 0) {
       const startColor = getColorForEpoch(scaleLeft);
       gradientStops.push(`${startColor} 0%`);
     }
     
-    // Add key positions
+    // Add key positions (0 will be included if it's in range)
     for (const key of keyPositions) {
       gradientStops.push(`${key.color} ${key.position}%`);
+    }
+    
+    // If scale starts before 0 but 0 is not in keyPositions (edge case), add it explicitly
+    if (scaleLeft < 0 && !keyPositions.some(k => k.epoch === 0) && 0 >= scaleLeft && 0 <= scaleRight) {
+      const zeroPosition = ((0 - scaleLeft) / scaleRange) * 100;
+      const zeroColor = getColorForEpoch(0);
+      gradientStops.push(`${zeroColor} ${zeroPosition}%`);
     }
     
     // Add end color if scale extends beyond NOW
