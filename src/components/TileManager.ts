@@ -1,4 +1,4 @@
-import { Tile, TileSize, TimeTileData, EpochTileData, CalendarTileData, DateTileData, TimezoneConverterTileData, MapTileData, FormatHelperTileData, QuickNotesTileData, NumberConverterTileData, UUIDTileData, TimeMark } from '../types';
+import { Tile, TileSize, TimeTileData, EpochTileData, CalendarTileData, DateTileData, TimezoneConverterTileData, MapTileData, FormatHelperTileData, QuickNotesTileData, NumberConverterTileData, UUIDTileData, NanoIdTileData, TimeMark } from '../types';
 import { TimeModule } from './TimeModule';
 import { EpochModule } from './EpochModule';
 import { CalendarModule } from './CalendarModule';
@@ -9,9 +9,10 @@ import { FormatHelperModule } from './FormatHelperModule';
 import { QuickNotesModule } from './QuickNotesModule';
 import { NumberConverterModule } from './NumberConverterModule';
 import { UUIDModule } from './UUIDModule';
+import { NanoIdModule } from './NanoIdModule';
 import { getThemePreference, setThemePreference, applyTheme, ThemePreference } from '../utils/theme';
 
-type ModuleInstance = TimeModule | EpochModule | CalendarModule | DateModule | TimezoneConverterModule | MapModule | FormatHelperModule | QuickNotesModule | NumberConverterModule | UUIDModule | null;
+type ModuleInstance = TimeModule | EpochModule | CalendarModule | DateModule | TimezoneConverterModule | MapModule | FormatHelperModule | QuickNotesModule | NumberConverterModule | UUIDModule | NanoIdModule | null;
 
 export class TileManager {
   private container: HTMLElement;
@@ -366,6 +367,8 @@ export class TileManager {
           (tileData.module as NumberConverterModule).updateData(updates.data as NumberConverterTileData);
         } else if (updatedTile.type === 'uuid') {
           (tileData.module as UUIDModule).updateData(updates.data as UUIDTileData);
+        } else if (updatedTile.type === 'nanoid') {
+          (tileData.module as NanoIdModule).updateData(updates.data as NanoIdTileData);
         }
       }
       this.saveToStorage();
@@ -442,6 +445,8 @@ export class TileManager {
         return new NumberConverterModule(element, tile.data as NumberConverterTileData);
       } else if (tile.type === 'uuid') {
         return new UUIDModule(element, tile.data as UUIDTileData);
+      } else if (tile.type === 'nanoid') {
+        return new NanoIdModule(element, tile.data as NanoIdTileData);
       }
     } catch (err) {
       console.error(`Failed to create module for tile type ${tile.type}:`, err);

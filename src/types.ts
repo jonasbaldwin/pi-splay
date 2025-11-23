@@ -8,9 +8,9 @@ export interface TimeMark {
 
 export interface Tile {
   id: string;
-  type: 'time' | 'epoch' | 'calendar' | 'date' | 'timezone-converter' | 'map' | 'format-helper' | 'quick-notes' | 'number-converter' | 'uuid';
+  type: 'time' | 'epoch' | 'calendar' | 'date' | 'timezone-converter' | 'map' | 'format-helper' | 'quick-notes' | 'number-converter' | 'uuid' | 'nanoid';
   size: TileSize;
-  data: TimeTileData | EpochTileData | CalendarTileData | DateTileData | TimezoneConverterTileData | MapTileData | FormatHelperTileData | QuickNotesTileData | NumberConverterTileData | UUIDTileData;
+  data: TimeTileData | EpochTileData | CalendarTileData | DateTileData | TimezoneConverterTileData | MapTileData | FormatHelperTileData | QuickNotesTileData | NumberConverterTileData | UUIDTileData | NanoIdTileData;
   gridPosition?: { x: number; y: number }; // Grid position for drag and drop
 }
 
@@ -81,6 +81,21 @@ export interface UUIDEntry {
 export interface UUIDTileData {
   version: '1' | '3' | '4' | '5'; // Current selected version
   uuids: UUIDEntry[]; // List of UUIDs
+}
+
+export interface NanoIdEntry {
+  id: string; // The NanoId value itself
+  used: boolean; // Whether it has been copied
+  lastUsedAt?: number; // Timestamp when last copied (milliseconds)
+  pinned: boolean; // Whether it's pinned
+  createdAt: number; // Timestamp when created (milliseconds)
+  notes?: string; // Notes for this specific NanoId
+}
+
+export interface NanoIdTileData {
+  alphabet: string; // Custom alphabet (default: standard nanoid alphabet)
+  length: number; // Length of generated IDs (default: 21)
+  nanoIds: NanoIdEntry[]; // List of NanoIds
 }
 
 export interface Tab {

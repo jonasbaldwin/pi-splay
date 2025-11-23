@@ -179,7 +179,8 @@ function initializeAddTileModal(tileManager: TileManager): void {
     { type: 'format-helper', label: 'Date Formatter', icon: '📝' },
     { type: 'quick-notes', label: 'Quick Notes', icon: '📝' },
     { type: 'number-converter', label: 'Number Converter', icon: '🔢' },
-    { type: 'uuid', label: 'UUID Generator', icon: '🆔' }
+    { type: 'uuid', label: 'UUID Generator', icon: '🆔' },
+    { type: 'nanoid', label: 'NanoId Generator', icon: '🔑' }
   ];
   
   // Populate tile type selection
@@ -276,6 +277,9 @@ function initializeAddTileModal(tileManager: TileManager): void {
     } else if (type === 'uuid') {
       configHtml = '<p class="config-info">UUID generator creates unique identifiers. Select version (v4 is default) and generate UUIDs.</p>';
       selectedConfig = { version: '4', uuids: [] };
+    } else if (type === 'nanoid') {
+      configHtml = '<p class="config-info">NanoId generator creates unique identifiers. Customize alphabet and length, then generate NanoIds.</p>';
+      selectedConfig = { alphabet: '_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', length: 21, nanoIds: [] };
     }
     
     tileConfig.innerHTML = configHtml;
