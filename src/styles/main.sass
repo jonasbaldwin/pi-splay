@@ -1574,27 +1574,60 @@
         @apply mb-4
         
         .tile-type-selection
-          @apply grid grid-cols-2 gap-4
+          @apply space-y-2
           
-          .tile-type-option
-            @apply bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600
-            @apply p-4 rounded-lg
-            @apply cursor-pointer
-            @apply transition-colors
-            @apply flex flex-col items-center
-            @apply gap-2
+          .tile-category-accordion
+            @apply rounded-lg
+            @apply overflow-hidden
             
-            &.selected
-              @apply bg-blue-600 dark:bg-blue-600
-              @apply ring-2 ring-blue-400
-              @apply text-white
+            .tile-category-header
+              @apply w-full
+              @apply flex items-center justify-between
+              @apply px-4 py-3
+              @apply bg-gray-100 dark:bg-gray-700
+              @apply hover:bg-gray-200 dark:hover:bg-gray-600
+              @apply cursor-pointer
+              @apply transition-colors
+              @apply border-none
+              @apply text-left
+              
+              .tile-category-name
+                @apply text-sm font-semibold
+                @apply text-gray-900 dark:text-white
+              
+              .tile-category-arrow
+                @apply text-gray-600 dark:text-gray-400
+                @apply text-xs
+                @apply transition-transform
+                @apply ml-2
             
-            .tile-type-icon
-              @apply text-3xl
-            
-            .tile-type-label
-              @apply text-sm font-semibold
-              @apply text-gray-900 dark:text-white
+            .tile-category-content
+              @apply p-3
+              @apply bg-white dark:bg-gray-800
+              
+              .tile-type-grid
+                @apply grid grid-cols-2 gap-3
+                
+                .tile-type-option
+                  @apply bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600
+                  @apply p-3 rounded-lg
+                  @apply cursor-pointer
+                  @apply transition-colors
+                  @apply flex flex-col items-center
+                  @apply gap-2
+                  
+                  &.selected
+                    @apply bg-blue-600 dark:bg-blue-600
+                    @apply ring-2 ring-blue-400
+                    @apply text-white
+                  
+                  .tile-type-icon
+                    @apply text-2xl
+                  
+                  .tile-type-label
+                    @apply text-xs font-semibold
+                    @apply text-gray-900 dark:text-white
+                    @apply text-center
         
         .tile-config
           @apply mt-4

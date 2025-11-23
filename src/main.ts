@@ -168,29 +168,74 @@ function initializeAddTileModal(tileManager: TileManager): void {
   let selectedTileType: string | null = null;
   let selectedConfig: any = {};
   
-  // Tile type options
+  // Tile type options with categories
   const tileTypes = [
-    { type: 'time', label: 'Time', icon: '🕐' },
-    { type: 'epoch', label: 'Epoch', icon: '⏱️' },
-    { type: 'calendar', label: 'Calendar', icon: '📅' },
-    { type: 'date', label: 'Date', icon: '📆' },
-    { type: 'timezone-converter', label: 'Timezone Converter', icon: '🌍' },
-    { type: 'map', label: 'World Map', icon: '🗺️' },
-    { type: 'format-helper', label: 'Date Formatter', icon: '📝' },
-    { type: 'quick-notes', label: 'Quick Notes', icon: '📝' },
-    { type: 'number-converter', label: 'Number Converter', icon: '🔢' },
-    { type: 'uuid', label: 'UUID Generator', icon: '🆔' },
-    { type: 'nanoid', label: 'NanoId Generator', icon: '🔑' }
+    { type: 'time', label: 'Time', icon: '🕐', category: 'Time & Date' },
+    { type: 'epoch', label: 'Epoch', icon: '⏱️', category: 'Time & Date' },
+    { type: 'calendar', label: 'Calendar', icon: '📅', category: 'Time & Date' },
+    { type: 'date', label: 'Date', icon: '📆', category: 'Time & Date' },
+    { type: 'timezone-converter', label: 'Timezone Converter', icon: '🌍', category: 'Time & Date' },
+    { type: 'format-helper', label: 'Date Formatter', icon: '📝', category: 'Converters & Formatters' },
+    { type: 'number-converter', label: 'Number Converter', icon: '🔢', category: 'Converters & Formatters' },
+    { type: 'uuid', label: 'UUID Generator', icon: '🆔', category: 'Generators' },
+    { type: 'nanoid', label: 'NanoId Generator', icon: '🔑', category: 'Generators' },
+    { type: 'map', label: 'World Map', icon: '🗺️', category: 'Other' },
+    { type: 'quick-notes', label: 'Quick Notes', icon: '📝', category: 'Other' }
   ];
   
-  // Populate tile type selection
+  // Group tiles by category
+  const tilesByCategory = tileTypes.reduce((acc, tile) => {
+    if (!acc[tile.category]) {
+      acc[tile.category] = [];
+    }
+    acc[tile.category].push(tile);
+    return acc;
+  }, {} as Record<string, typeof tileTypes>);
+  
+  // Populate tile type selection with accordion
   if (tileTypeSelection) {
-    tileTypeSelection.innerHTML = tileTypes.map(t => `
-      <div class="tile-type-option" data-tile-type="${t.type}">
-        <span class="tile-type-icon">${t.icon}</span>
-        <span class="tile-type-label">${t.label}</span>
-      </div>
-    `).join('');
+    const categories = Object.keys(tilesByCategory);
+    tileTypeSelection.innerHTML = categories.map((category, categoryIndex) => {
+      const categoryTiles = tilesByCategory[category];
+      const isFirstCategory = categoryIndex === 0;
+      return `
+        <div class="tile-category-accordion" data-category="${category}">
+          <button class="tile-category-header" data-category-toggle="${category}">
+            <span class="tile-category-name">${category}</span>
+            <span class="tile-category-arrow">${isFirstCategory ? '▼' : '▶'}</span>
+          </button>
+          <div class="tile-category-content" data-category-content="${category}" style="display: ${isFirstCategory ? 'block' : 'none'}">
+            <div class="tile-type-grid">
+              ${categoryTiles.map(t => `
+                <div class="tile-type-option" data-tile-type="${t.type}">
+                  <span class="tile-type-icon">${t.icon}</span>
+                  <span class="tile-type-label">${t.label}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    
+    // Handle accordion toggle
+    tileTypeSelection.querySelectorAll('.tile-category-header').forEach(header => {
+      header.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const category = (header as HTMLElement).getAttribute('data-category-toggle');
+        if (category) {
+          const content = tileTypeSelection.querySelector(`[data-category-content="${category}"]`) as HTMLElement;
+          const arrow = header.querySelector('.tile-category-arrow') as HTMLElement;
+          if (content) {
+            const isOpen = content.style.display !== 'none';
+            content.style.display = isOpen ? 'none' : 'block';
+            if (arrow) {
+              arrow.textContent = isOpen ? '▶' : '▼';
+            }
+          }
+        }
+      });
+    });
     
     // Handle tile type selection
     tileTypeSelection.querySelectorAll('.tile-type-option').forEach(option => {
@@ -311,8 +356,24 @@ function initializeAddTileModal(tileManager: TileManager): void {
       selectedConfig = {};
       if (tileConfig) tileConfig.style.display = 'none';
       if (tileTypeSelection) {
+        // Reset tile selection
         tileTypeSelection.querySelectorAll('.tile-type-option').forEach(opt => {
           opt.classList.remove('selected');
+        });
+        // Reset accordion state - expand first category, collapse others
+        const categories = Object.keys(tilesByCategory);
+        tileTypeSelection.querySelectorAll('.tile-category-content').forEach((content, index) => {
+          const contentEl = content as HTMLElement;
+          const category = contentEl.getAttribute('data-category-content');
+          const header = tileTypeSelection.querySelector(`[data-category-toggle="${category}"]`);
+          const arrow = header?.querySelector('.tile-category-arrow') as HTMLElement;
+          if (index === 0) {
+            contentEl.style.display = 'block';
+            if (arrow) arrow.textContent = '▼';
+          } else {
+            contentEl.style.display = 'none';
+            if (arrow) arrow.textContent = '▶';
+          }
         });
       }
       if (addTileBtn) addTileBtn.disabled = true;
