@@ -713,6 +713,228 @@
           @apply text-gray-500 dark:text-gray-400
           @apply italic
 
+  .uuid-module
+    @apply flex flex-col h-full
+    @apply select-none
+    
+    .uuid-header
+      @apply flex items-center justify-between mb-4
+      
+      .uuid-title
+        @apply text-lg font-semibold
+        @apply text-gray-900 dark:text-white
+      
+      .uuid-version-controls
+        @apply flex items-center gap-2
+      
+      .uuid-version-select
+        @apply bg-gray-100 dark:bg-gray-700
+        @apply text-gray-900 dark:text-white
+        @apply px-3 py-1 rounded-lg
+        @apply border border-gray-300 dark:border-gray-600
+        @apply text-sm
+        @apply focus:outline-none focus:ring-2 focus:ring-blue-500
+        @apply transition-colors
+        @apply cursor-pointer
+      
+      .uuid-info-btn
+        @apply bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600
+        @apply text-gray-800 dark:text-white
+        @apply w-6 h-6 rounded-full
+        @apply flex items-center justify-center
+        @apply cursor-pointer
+        @apply transition-colors
+        @apply text-sm
+        @apply font-bold
+        @apply border-none
+    
+    .uuid-list
+      @apply space-y-2
+      max-height: 600px
+      overflow-y: auto
+      @apply pr-2
+      
+      .uuid-item
+        @apply flex flex-col gap-2
+        @apply p-2
+        @apply rounded-lg
+        @apply bg-gray-50 dark:bg-gray-700
+        @apply border border-gray-200 dark:border-gray-600
+        @apply transition-all
+        position: relative
+        
+        .uuid-item-main
+          @apply flex items-center gap-2
+        
+        &.uuid-used
+          @apply opacity-75
+          
+          .uuid-value
+            @apply text-gray-600 dark:text-gray-400
+        
+        &.uuid-pinned
+          @apply border-yellow-300 dark:border-yellow-600
+          @apply bg-yellow-50 dark:bg-yellow-900 dark:bg-opacity-10
+        
+        .uuid-pin-btn
+          @apply bg-transparent
+          @apply border-none
+          @apply cursor-pointer
+          @apply text-lg
+          @apply p-1
+          @apply rounded
+          @apply transition-colors
+          @apply hover:bg-gray-200 dark:hover:bg-gray-600
+          @apply flex-shrink-0
+          @apply opacity-70 hover:opacity-100
+        
+        .uuid-value
+          @apply flex-1
+          @apply font-mono
+          @apply text-sm
+          @apply text-gray-900 dark:text-white
+          @apply cursor-pointer
+          @apply select-all
+          @apply break-all
+          @apply transition-colors
+          @apply hover:text-blue-600 dark:hover:text-blue-400
+          word-break: break-all
+        
+        .uuid-copy-btn
+          @apply bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700
+          @apply text-white
+          @apply text-xs
+          @apply px-3 py-1
+          @apply rounded-full
+          @apply cursor-pointer
+          @apply transition-colors
+          @apply flex-shrink-0
+          @apply font-medium
+          @apply border-none
+          
+          &.uuid-copy-used
+            @apply bg-gray-400 dark:bg-gray-600
+            @apply cursor-default
+            @apply opacity-60
+        
+        .uuid-remove-btn
+          @apply bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700
+          @apply text-white
+          @apply text-xs
+          @apply w-6 h-6
+          @apply rounded-full
+          @apply cursor-pointer
+          @apply transition-colors
+          @apply flex-shrink-0
+          @apply font-bold
+          @apply border-none
+          @apply flex items-center justify-center
+          @apply leading-none
+          font-size: 1.25rem
+        
+        .uuid-last-used
+          @apply absolute
+          @apply bottom-0
+          @apply right-2
+          @apply text-xs
+          @apply text-gray-400 dark:text-gray-500
+          @apply italic
+        
+        .uuid-item-notes
+          @apply mt-2
+          @apply pt-2
+          @apply border-t border-gray-300 dark:border-gray-600
+          
+          .uuid-notes-display
+            @apply text-xs
+            @apply text-gray-700 dark:text-gray-300
+            @apply p-2
+            @apply bg-gray-100 dark:bg-gray-800
+            @apply rounded
+            @apply border border-gray-200 dark:border-gray-600
+            @apply cursor-text
+            @apply min-h-[40px]
+            word-wrap: break-word
+            white-space: pre-wrap
+            
+            .uuid-notes-placeholder
+              @apply text-gray-400 dark:text-gray-500
+              @apply italic
+          
+          .uuid-notes-edit
+            @apply text-xs
+            @apply text-gray-700 dark:text-gray-300
+            @apply p-2
+            @apply bg-gray-100 dark:bg-gray-800
+            @apply rounded
+            @apply border border-gray-300 dark:border-gray-500
+            @apply focus:outline-none focus:ring-2 focus:ring-blue-500
+            @apply min-h-[40px]
+            word-wrap: break-word
+            white-space: pre-wrap
+            outline: none
+    
+    .uuid-actions
+      @apply mt-4 mb-4
+      @apply flex justify-end
+      
+      .uuid-remove-pins-btn
+        @apply bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600
+        @apply text-gray-800 dark:text-white
+        @apply px-3 py-1 rounded-lg
+        @apply text-sm
+        @apply cursor-pointer
+        @apply transition-colors
+        @apply border-none
+        @apply font-medium
+    
+    .uuid-version-info-modal
+      @apply fixed inset-0
+      @apply bg-black bg-opacity-50
+      @apply flex items-center justify-center
+      @apply z-50
+      @apply p-4
+      
+      .uuid-version-info-content
+        @apply bg-white dark:bg-gray-800
+        @apply rounded-lg
+        @apply shadow-xl
+        @apply max-w-md
+        @apply w-full
+        @apply p-6
+        @apply relative
+        
+        .uuid-version-info-header
+          @apply flex items-center justify-between mb-4
+          
+          h4
+            @apply text-lg font-semibold
+            @apply text-gray-900 dark:text-white
+          
+          .uuid-version-info-close
+            @apply bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600
+            @apply text-gray-800 dark:text-white
+            @apply w-6 h-6 rounded-full
+            @apply flex items-center justify-center
+            @apply cursor-pointer
+            @apply transition-colors
+            @apply text-lg
+            @apply font-bold
+            @apply border-none
+            @apply leading-none
+        
+        .uuid-version-info-body
+          @apply text-sm
+          @apply text-gray-700 dark:text-gray-300
+          @apply leading-relaxed
+          
+          .uuid-version-info-item
+            @apply mb-4
+            @apply last:mb-0
+            
+            strong
+              @apply text-gray-900 dark:text-white
+
   .timezone-converter-module
     @apply flex flex-col h-full
     @apply select-none

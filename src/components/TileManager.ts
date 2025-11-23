@@ -1,4 +1,4 @@
-import { Tile, TileSize, TimeTileData, EpochTileData, CalendarTileData, DateTileData, TimezoneConverterTileData, MapTileData, FormatHelperTileData, QuickNotesTileData, NumberConverterTileData, TimeMark } from '../types';
+import { Tile, TileSize, TimeTileData, EpochTileData, CalendarTileData, DateTileData, TimezoneConverterTileData, MapTileData, FormatHelperTileData, QuickNotesTileData, NumberConverterTileData, UUIDTileData, TimeMark } from '../types';
 import { TimeModule } from './TimeModule';
 import { EpochModule } from './EpochModule';
 import { CalendarModule } from './CalendarModule';
@@ -8,9 +8,10 @@ import { MapModule } from './MapModule';
 import { FormatHelperModule } from './FormatHelperModule';
 import { QuickNotesModule } from './QuickNotesModule';
 import { NumberConverterModule } from './NumberConverterModule';
+import { UUIDModule } from './UUIDModule';
 import { getThemePreference, setThemePreference, applyTheme, ThemePreference } from '../utils/theme';
 
-type ModuleInstance = TimeModule | EpochModule | CalendarModule | DateModule | TimezoneConverterModule | MapModule | FormatHelperModule | QuickNotesModule | NumberConverterModule | null;
+type ModuleInstance = TimeModule | EpochModule | CalendarModule | DateModule | TimezoneConverterModule | MapModule | FormatHelperModule | QuickNotesModule | NumberConverterModule | UUIDModule | null;
 
 export class TileManager {
   private container: HTMLElement;
@@ -363,6 +364,8 @@ export class TileManager {
           (tileData.module as QuickNotesModule).updateData(updates.data as QuickNotesTileData);
         } else if (updatedTile.type === 'number-converter') {
           (tileData.module as NumberConverterModule).updateData(updates.data as NumberConverterTileData);
+        } else if (updatedTile.type === 'uuid') {
+          (tileData.module as UUIDModule).updateData(updates.data as UUIDTileData);
         }
       }
       this.saveToStorage();
@@ -437,6 +440,8 @@ export class TileManager {
         return new QuickNotesModule(element, tile.data as QuickNotesTileData);
       } else if (tile.type === 'number-converter') {
         return new NumberConverterModule(element, tile.data as NumberConverterTileData);
+      } else if (tile.type === 'uuid') {
+        return new UUIDModule(element, tile.data as UUIDTileData);
       }
     } catch (err) {
       console.error(`Failed to create module for tile type ${tile.type}:`, err);

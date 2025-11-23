@@ -178,7 +178,8 @@ function initializeAddTileModal(tileManager: TileManager): void {
     { type: 'map', label: 'World Map', icon: '🗺️' },
     { type: 'format-helper', label: 'Date Formatter', icon: '📝' },
     { type: 'quick-notes', label: 'Quick Notes', icon: '📝' },
-    { type: 'number-converter', label: 'Number Converter', icon: '🔢' }
+    { type: 'number-converter', label: 'Number Converter', icon: '🔢' },
+    { type: 'uuid', label: 'UUID Generator', icon: '🆔' }
   ];
   
   // Populate tile type selection
@@ -272,6 +273,9 @@ function initializeAddTileModal(tileManager: TileManager): void {
     } else if (type === 'number-converter') {
       configHtml = '<p class="config-info">Number converter converts between decimal, binary, hexadecimal, and octal formats.</p>';
       selectedConfig = { value: 42 };
+    } else if (type === 'uuid') {
+      configHtml = '<p class="config-info">UUID generator creates unique identifiers. Select version (v4 is default) and generate UUIDs.</p>';
+      selectedConfig = { version: '4', uuids: [] };
     }
     
     tileConfig.innerHTML = configHtml;

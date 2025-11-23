@@ -8,9 +8,9 @@ export interface TimeMark {
 
 export interface Tile {
   id: string;
-  type: 'time' | 'epoch' | 'calendar' | 'date' | 'timezone-converter' | 'map' | 'format-helper' | 'quick-notes' | 'number-converter';
+  type: 'time' | 'epoch' | 'calendar' | 'date' | 'timezone-converter' | 'map' | 'format-helper' | 'quick-notes' | 'number-converter' | 'uuid';
   size: TileSize;
-  data: TimeTileData | EpochTileData | CalendarTileData | DateTileData | TimezoneConverterTileData | MapTileData | FormatHelperTileData | QuickNotesTileData | NumberConverterTileData;
+  data: TimeTileData | EpochTileData | CalendarTileData | DateTileData | TimezoneConverterTileData | MapTileData | FormatHelperTileData | QuickNotesTileData | NumberConverterTileData | UUIDTileData;
   gridPosition?: { x: number; y: number }; // Grid position for drag and drop
 }
 
@@ -66,6 +66,21 @@ export interface QuickNotesTileData {
 
 export interface NumberConverterTileData {
   value?: number; // Stored decimal value
+}
+
+export interface UUIDEntry {
+  id: string; // The UUID value itself
+  version: '1' | '3' | '4' | '5';
+  used: boolean; // Whether it has been copied
+  lastUsedAt?: number; // Timestamp when last copied (milliseconds)
+  pinned: boolean; // Whether it's pinned
+  createdAt: number; // Timestamp when created (milliseconds)
+  notes?: string; // Notes for this specific UUID
+}
+
+export interface UUIDTileData {
+  version: '1' | '3' | '4' | '5'; // Current selected version
+  uuids: UUIDEntry[]; // List of UUIDs
 }
 
 export interface Tab {
