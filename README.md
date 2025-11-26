@@ -44,7 +44,7 @@ Pi-splay is a touch-friendly modular dashboard built with HTML, TypeScript, Tail
 
 - **Test Logger Module**: Track and differentiate test iterations with unique, sequential identifiers. Features include:
 
-![Test Logger](src/img/test-logger.png)
+  - <img src="src/img/test-logger.png" alt="Test Logger" width="450">
   - Optional test identifier prefix
   - Up to four sequence levels (primary, secondary, tertiary, quaternary)
   - Sequence types: Alphabet (A-Z), Greek (α-ω), Numbers (0-n), or Custom
