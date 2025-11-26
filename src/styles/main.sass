@@ -1833,7 +1833,7 @@
           @apply w-5 text-center
         
         .header-seq
-          width: 140px
+          @apply flex-1
         
         .header-val
           @apply w-12 text-center
@@ -1845,19 +1845,50 @@
         @apply flex items-center gap-2
         @apply text-sm
         
-        select
-          @apply px-2 py-1
-          @apply bg-gray-100 dark:bg-gray-700
-          @apply border border-gray-300 dark:border-gray-600
-          @apply rounded
-          @apply text-gray-900 dark:text-white
-          @apply text-xs
-          @apply cursor-pointer
-          @apply outline-none
-          width: 140px
+        .sequence-selector
+          @apply flex gap-1 flex-1
           
-          &:disabled
-            @apply opacity-50 cursor-not-allowed
+          select
+            @apply px-2 py-1
+            @apply bg-gray-100 dark:bg-gray-700
+            @apply border border-gray-300 dark:border-gray-600
+            @apply rounded
+            @apply text-gray-900 dark:text-white
+            @apply text-xs
+            @apply cursor-pointer
+            @apply outline-none
+            width: 100%
+            flex-shrink: 0
+            
+            &:disabled
+              @apply opacity-50 cursor-not-allowed
+          
+          .custom-input
+            @apply px-2 py-1
+            @apply bg-gray-100 dark:bg-gray-600
+            @apply border border-gray-300 dark:border-gray-500
+            @apply rounded
+            @apply text-gray-900 dark:text-white
+            @apply text-xs
+            @apply outline-none focus:border-blue-500 dark:focus:border-blue-400
+            @apply transition-colors
+            flex: 1
+            min-width: 0
+            
+            &::placeholder
+              @apply text-gray-400 dark:text-gray-500
+              font-size: 0.65rem
+          
+          .custom-back-btn
+            @apply px-1 py-0
+            @apply bg-gray-200 dark:bg-gray-600
+            @apply text-gray-600 dark:text-gray-300
+            @apply text-xs
+            @apply rounded
+            @apply cursor-pointer
+            @apply hover:bg-gray-300 dark:hover:bg-gray-500
+            @apply transition-colors
+            flex-shrink: 0
         
         .sequence-value
           @apply font-mono text-base font-bold

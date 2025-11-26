@@ -108,10 +108,10 @@ export interface TestLogEntry {
 
 export interface TestLoggerTileData {
   description: string;
-  primaryType: 'alphabet' | 'greek' | 'numbers';
-  secondaryType: 'alphabet' | 'greek' | 'numbers' | 'none';
-  tertiaryType: 'alphabet' | 'greek' | 'numbers' | 'none';
-  quaternaryType: 'alphabet' | 'greek' | 'numbers' | 'none';
+  primaryType: 'alphabet' | 'greek' | 'numbers' | 'custom';
+  secondaryType: 'alphabet' | 'greek' | 'numbers' | 'custom' | 'none';
+  tertiaryType: 'alphabet' | 'greek' | 'numbers' | 'custom' | 'none';
+  quaternaryType: 'alphabet' | 'greek' | 'numbers' | 'custom' | 'none';
   primaryIndex: number;
   secondaryIndex: number;
   tertiaryIndex: number;
@@ -120,6 +120,10 @@ export interface TestLoggerTileData {
   secondaryDelimiter?: string;
   tertiaryDelimiter?: string;
   quaternaryDelimiter?: string;
+  primaryCustom?: string;
+  secondaryCustom?: string;
+  tertiaryCustom?: string;
+  quaternaryCustom?: string;
   logs: TestLogEntry[];
   previewNote?: string;
   keepNote?: boolean;

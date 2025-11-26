@@ -1,6 +1,6 @@
 import { TestLoggerTileData, TestLogEntry } from '../types';
 
-type SequenceType = 'alphabet' | 'greek' | 'numbers' | 'none';
+type SequenceType = 'alphabet' | 'greek' | 'numbers' | 'custom' | 'none';
 
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 const GREEK = ['α', 'β', 'γ', 'δ', 'ε', 'ζ', 'η', 'θ', 'ι', 'κ', 'λ', 'μ', 'ν', 'ξ', 'ο', 'π', 'ρ', 'σ', 'τ', 'υ', 'φ', 'χ', 'ψ', 'ω'];
@@ -27,6 +27,10 @@ export class TestLoggerModule {
     if (this.data.secondaryDelimiter === undefined) this.data.secondaryDelimiter = '.';
     if (this.data.tertiaryDelimiter === undefined) this.data.tertiaryDelimiter = '.';
     if (this.data.quaternaryDelimiter === undefined) this.data.quaternaryDelimiter = '.';
+    if (this.data.primaryCustom === undefined) this.data.primaryCustom = '';
+    if (this.data.secondaryCustom === undefined) this.data.secondaryCustom = '';
+    if (this.data.tertiaryCustom === undefined) this.data.tertiaryCustom = '';
+    if (this.data.quaternaryCustom === undefined) this.data.quaternaryCustom = '';
     if (!this.data.logs) this.data.logs = [];
     if (!this.data.previewNote) this.data.previewNote = '';
     if (this.data.keepNote === undefined) this.data.keepNote = false;
@@ -34,7 +38,15 @@ export class TestLoggerModule {
     this.initialize();
   }
 
-  private getSequenceValue(type: SequenceType, index: number): string | null {
+  private parseCustomSequence(customStr: string): string[] {
+    if (!customStr) return [];
+    if (customStr.includes(',')) {
+      return customStr.split(',').map(s => s.trim()).filter(s => s);
+    }
+    return customStr.split('');
+  }
+
+  private getSequenceValue(type: SequenceType, index: number, customStr?: string): string | null {
     switch (type) {
       case 'alphabet':
         return ALPHABET[index % ALPHABET.length] + (index >= ALPHABET.length ? Math.floor(index / ALPHABET.length).toString() : '');
@@ -42,6 +54,10 @@ export class TestLoggerModule {
         return GREEK[index % GREEK.length] + (index >= GREEK.length ? Math.floor(index / GREEK.length).toString() : '');
       case 'numbers':
         return index.toString();
+      case 'custom':
+        const items = this.parseCustomSequence(customStr || '');
+        if (items.length === 0) return '?';
+        return items[index % items.length] + (index >= items.length ? Math.floor(index / items.length).toString() : '');
       case 'none':
         return null;
     }
@@ -50,7 +66,7 @@ export class TestLoggerModule {
   private buildSequenceString(): string {
     let result = this.data.description || '';
     
-    const primary = this.getSequenceValue(this.data.primaryType, this.data.primaryIndex);
+    const primary = this.getSequenceValue(this.data.primaryType, this.data.primaryIndex, this.data.primaryCustom);
     if (primary) {
       // Only add delimiter if there's a description
       if (result) {
@@ -59,17 +75,17 @@ export class TestLoggerModule {
       result += primary;
     }
     
-    const secondary = this.getSequenceValue(this.data.secondaryType, this.data.secondaryIndex);
+    const secondary = this.getSequenceValue(this.data.secondaryType, this.data.secondaryIndex, this.data.secondaryCustom);
     if (secondary) {
       result += this.data.secondaryDelimiter + secondary;
     }
     
-    const tertiary = this.getSequenceValue(this.data.tertiaryType, this.data.tertiaryIndex);
+    const tertiary = this.getSequenceValue(this.data.tertiaryType, this.data.tertiaryIndex, this.data.tertiaryCustom);
     if (tertiary) {
       result += this.data.tertiaryDelimiter + tertiary;
     }
     
-    const quaternary = this.getSequenceValue(this.data.quaternaryType, this.data.quaternaryIndex);
+    const quaternary = this.getSequenceValue(this.data.quaternaryType, this.data.quaternaryIndex, this.data.quaternaryCustom);
     if (quaternary) {
       result += this.data.quaternaryDelimiter + quaternary;
     }
@@ -180,12 +196,14 @@ export class TestLoggerModule {
       <option value="alphabet" ${selected === 'alphabet' ? 'selected' : ''}>Alphabet (A-Z)</option>
       <option value="greek" ${selected === 'greek' ? 'selected' : ''}>Greek (α-ω)</option>
       <option value="numbers" ${selected === 'numbers' ? 'selected' : ''}>Numbers (0-n)</option>
+      <option value="custom" ${selected === 'custom' ? 'selected' : ''}>Custom</option>
     `;
     
     const sequenceOptionsNoNone = (selected: string) => `
       <option value="alphabet" ${selected === 'alphabet' ? 'selected' : ''}>Alphabet (A-Z)</option>
       <option value="greek" ${selected === 'greek' ? 'selected' : ''}>Greek (α-ω)</option>
       <option value="numbers" ${selected === 'numbers' ? 'selected' : ''}>Numbers (0-n)</option>
+      <option value="custom" ${selected === 'custom' ? 'selected' : ''}>Custom</option>
     `;
 
     const secondaryEnabled = this.data.secondaryType !== 'none';
@@ -223,37 +241,53 @@ export class TestLoggerModule {
             </div>
             <div class="test-logger-sequence primary">
               <input type="text" class="delimiter-input" data-delimiter="primary" maxlength="1" value="${this.escapeHtml(this.data.primaryDelimiter)}" title="Delimiter">
-              <select data-seq-type="primary">
-                ${sequenceOptionsNoNone(this.data.primaryType)}
-              </select>
-              <span class="sequence-value">${this.getSequenceValue(this.data.primaryType, this.data.primaryIndex)}</span>
+              <div class="sequence-selector">
+                <select data-seq-type="primary" style="${this.data.primaryType === 'custom' ? 'display: none;' : ''}">
+                  ${sequenceOptionsNoNone(this.data.primaryType)}
+                </select>
+                <input type="text" class="custom-input" data-custom="primary" placeholder='"AEIOU" or "Alpha, Beta, ..."' value="${this.escapeHtml(this.data.primaryCustom || '')}" style="${this.data.primaryType === 'custom' ? '' : 'display: none;'}">
+                <button class="custom-back-btn" data-custom-back="primary" style="${this.data.primaryType === 'custom' ? '' : 'display: none;'}" title="Back to presets">←</button>
+              </div>
+              <span class="sequence-value">${this.getSequenceValue(this.data.primaryType, this.data.primaryIndex, this.data.primaryCustom)}</span>
               <button class="increment-btn" data-increment="primary" title="Increment primary">+</button>
             </div>
             
             <div class="test-logger-sequence secondary">
               <input type="text" class="delimiter-input" data-delimiter="secondary" maxlength="1" value="${this.escapeHtml(this.data.secondaryDelimiter)}" title="Delimiter" ${!secondaryEnabled ? 'disabled' : ''}>
-              <select data-seq-type="secondary">
-                ${sequenceOptionsWithNone(this.data.secondaryType)}
-              </select>
-              <span class="sequence-value">${secondaryEnabled ? this.getSequenceValue(this.data.secondaryType, this.data.secondaryIndex) : '-'}</span>
+              <div class="sequence-selector">
+                <select data-seq-type="secondary" style="${this.data.secondaryType === 'custom' ? 'display: none;' : ''}">
+                  ${sequenceOptionsWithNone(this.data.secondaryType)}
+                </select>
+                <input type="text" class="custom-input" data-custom="secondary" placeholder='"AEIOU" or "Alpha, Beta, ..."' value="${this.escapeHtml(this.data.secondaryCustom || '')}" style="${this.data.secondaryType === 'custom' ? '' : 'display: none;'}">
+                <button class="custom-back-btn" data-custom-back="secondary" style="${this.data.secondaryType === 'custom' ? '' : 'display: none;'}" title="Back to presets">←</button>
+              </div>
+              <span class="sequence-value">${secondaryEnabled ? this.getSequenceValue(this.data.secondaryType, this.data.secondaryIndex, this.data.secondaryCustom) : '-'}</span>
               <button class="increment-btn" data-increment="secondary" ${!secondaryEnabled ? 'disabled' : ''} title="Increment secondary">+</button>
             </div>
             
             <div class="test-logger-sequence tertiary" style="${showTertiary ? '' : 'display: none;'}">
               <input type="text" class="delimiter-input" data-delimiter="tertiary" maxlength="1" value="${this.escapeHtml(this.data.tertiaryDelimiter)}" title="Delimiter" ${!tertiaryEnabled ? 'disabled' : ''}>
-              <select data-seq-type="tertiary">
-                ${sequenceOptionsWithNone(this.data.tertiaryType)}
-              </select>
-              <span class="sequence-value">${tertiaryEnabled ? this.getSequenceValue(this.data.tertiaryType, this.data.tertiaryIndex) : '-'}</span>
+              <div class="sequence-selector">
+                <select data-seq-type="tertiary" style="${this.data.tertiaryType === 'custom' ? 'display: none;' : ''}">
+                  ${sequenceOptionsWithNone(this.data.tertiaryType)}
+                </select>
+                <input type="text" class="custom-input" data-custom="tertiary" placeholder='"AEIOU" or "Alpha, Beta, ..."' value="${this.escapeHtml(this.data.tertiaryCustom || '')}" style="${this.data.tertiaryType === 'custom' ? '' : 'display: none;'}">
+                <button class="custom-back-btn" data-custom-back="tertiary" style="${this.data.tertiaryType === 'custom' ? '' : 'display: none;'}" title="Back to presets">←</button>
+              </div>
+              <span class="sequence-value">${tertiaryEnabled ? this.getSequenceValue(this.data.tertiaryType, this.data.tertiaryIndex, this.data.tertiaryCustom) : '-'}</span>
               <button class="increment-btn" data-increment="tertiary" ${!tertiaryEnabled ? 'disabled' : ''} title="Increment tertiary">+</button>
             </div>
             
             <div class="test-logger-sequence quaternary" style="${showQuaternary ? '' : 'display: none;'}">
               <input type="text" class="delimiter-input" data-delimiter="quaternary" maxlength="1" value="${this.escapeHtml(this.data.quaternaryDelimiter)}" title="Delimiter" ${!quaternaryEnabled ? 'disabled' : ''}>
-              <select data-seq-type="quaternary">
-                ${sequenceOptionsWithNone(this.data.quaternaryType)}
-              </select>
-              <span class="sequence-value">${quaternaryEnabled ? this.getSequenceValue(this.data.quaternaryType, this.data.quaternaryIndex) : '-'}</span>
+              <div class="sequence-selector">
+                <select data-seq-type="quaternary" style="${this.data.quaternaryType === 'custom' ? 'display: none;' : ''}">
+                  ${sequenceOptionsWithNone(this.data.quaternaryType)}
+                </select>
+                <input type="text" class="custom-input" data-custom="quaternary" placeholder='"AEIOU" or "Alpha, Beta, ..."' value="${this.escapeHtml(this.data.quaternaryCustom || '')}" style="${this.data.quaternaryType === 'custom' ? '' : 'display: none;'}">
+                <button class="custom-back-btn" data-custom-back="quaternary" style="${this.data.quaternaryType === 'custom' ? '' : 'display: none;'}" title="Back to presets">←</button>
+              </div>
+              <span class="sequence-value">${quaternaryEnabled ? this.getSequenceValue(this.data.quaternaryType, this.data.quaternaryIndex, this.data.quaternaryCustom) : '-'}</span>
               <button class="increment-btn" data-increment="quaternary" ${!quaternaryEnabled ? 'disabled' : ''} title="Increment quaternary">+</button>
             </div>
           </div>
@@ -385,6 +419,37 @@ export class TestLoggerModule {
         (this.data as any)[`${level}Delimiter`] = value;
         this.updatePreview();
         this.saveToStorage();
+      });
+    });
+
+    // Custom sequence inputs
+    this.element.querySelectorAll('[data-custom]').forEach(input => {
+      input.addEventListener('input', (e) => {
+        e.stopPropagation();
+        const level = (e.target as HTMLInputElement).getAttribute('data-custom') as 'primary' | 'secondary' | 'tertiary' | 'quaternary';
+        (this.data as any)[`${level}Custom`] = (e.target as HTMLInputElement).value;
+        this.updatePreview();
+        this.saveToStorage();
+        // Update the sequence value display
+        const row = (e.target as HTMLElement).closest('.test-logger-sequence');
+        const valueEl = row?.querySelector('.sequence-value');
+        if (valueEl) {
+          const index = (this.data as any)[`${level}Index`];
+          const customVal = (this.data as any)[`${level}Custom`];
+          valueEl.textContent = this.getSequenceValue('custom', index, customVal) || '?';
+        }
+      });
+    });
+
+    // Custom back buttons
+    this.element.querySelectorAll('[data-custom-back]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const level = (e.target as HTMLButtonElement).getAttribute('data-custom-back') as 'primary' | 'secondary' | 'tertiary' | 'quaternary';
+        (this.data as any)[`${level}Type`] = level === 'primary' ? 'alphabet' : 'none';
+        (this.data as any)[`${level}Index`] = 0;
+        this.saveToStorage();
+        this.render();
       });
     });
 
