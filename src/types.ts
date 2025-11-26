@@ -127,6 +127,7 @@ export interface TestLoggerTileData {
   logs: TestLogEntry[];
   previewNote?: string;
   keepNote?: boolean;
+  timeFormat?: 'utc' | 'seconds' | 'milliseconds';
 }
 
 export interface Tab {

@@ -34,6 +34,7 @@ export class TestLoggerModule {
     if (!this.data.logs) this.data.logs = [];
     if (!this.data.previewNote) this.data.previewNote = '';
     if (this.data.keepNote === undefined) this.data.keepNote = false;
+    if (!this.data.timeFormat) this.data.timeFormat = 'utc';
     
     this.initialize();
   }
@@ -320,12 +321,17 @@ export class TestLoggerModule {
               : this.data.logs.map(log => `
                 <div class="log-entry" data-log-id="${log.id}">
                   <button class="log-star-btn ${log.starred ? 'starred' : ''}" data-star-log="${log.id}" title="Star">★</button>
-                  <code class="log-sequence">${this.escapeHtml(log.sequence)}</code>
-                  <input type="text" 
-                         class="log-notes" 
-                         data-log-notes="${log.id}"
-                         placeholder="Result notes..."
-                         value="${this.escapeHtml(log.notes || '')}">
+                  <div class="log-content">
+                    <div class="log-row">
+                      <code class="log-sequence">${this.escapeHtml(log.sequence)}</code>
+                      <input type="text" 
+                             class="log-notes" 
+                             data-log-notes="${log.id}"
+                             placeholder="Result notes..."
+                             value="${this.escapeHtml(log.notes || '')}">
+                    </div>
+                    <div class="log-time" data-log-time="${log.id}" data-timestamp="${log.timestamp}" data-format="${this.data.timeFormat}">${this.formatTimestamp(log.timestamp)}</div>
+                  </div>
                   <button class="log-remove-btn" data-remove-log="${log.id}" title="Remove">×</button>
                 </div>
               `).join('')
@@ -498,6 +504,43 @@ export class TestLoggerModule {
         }
       });
     });
+
+    // Log time toggle
+    this.element.querySelectorAll('[data-log-time]').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const currentFormat = this.data.timeFormat;
+        
+        let newFormat: 'utc' | 'seconds' | 'milliseconds';
+        if (currentFormat === 'utc') {
+          newFormat = 'seconds';
+        } else if (currentFormat === 'seconds') {
+          newFormat = 'milliseconds';
+        } else {
+          newFormat = 'utc';
+        }
+        
+        this.data.timeFormat = newFormat;
+        this.saveToStorage();
+        
+        // Update all log times
+        this.element.querySelectorAll('[data-log-time]').forEach(timeEl => {
+          const timestamp = parseInt((timeEl as HTMLElement).getAttribute('data-timestamp') || '0', 10);
+          let newText: string;
+          
+          if (newFormat === 'seconds') {
+            newText = Math.floor(timestamp / 1000).toString();
+          } else if (newFormat === 'milliseconds') {
+            newText = timestamp.toString();
+          } else {
+            newText = new Date(timestamp).toISOString();
+          }
+          
+          (timeEl as HTMLElement).setAttribute('data-format', newFormat);
+          timeEl.textContent = newText;
+        });
+      });
+    });
   }
 
   private updatePreview(): void {
@@ -549,6 +592,17 @@ export class TestLoggerModule {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+  }
+
+  private formatTimestamp(timestamp: number): string {
+    switch (this.data.timeFormat) {
+      case 'seconds':
+        return Math.floor(timestamp / 1000).toString();
+      case 'milliseconds':
+        return timestamp.toString();
+      default:
+        return new Date(timestamp).toISOString();
+    }
   }
 
   public updateData(data: TestLoggerTileData): void {
