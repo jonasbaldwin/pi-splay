@@ -41,6 +41,22 @@ Pi-splay is a touch-friendly modular dashboard built with HTML, TypeScript, Tail
   - Detailed elapsed time breakdown between timestamps
   - Copy epoch value to clipboard
 
+
+- **Test Logger Module**: Track and differentiate test iterations with unique, sequential identifiers. Features include:
+
+![Test Logger](src/img/test-logger.png)
+  - Optional test identifier prefix
+  - Up to four sequence levels (primary, secondary, tertiary, quaternary)
+  - Sequence types: Alphabet (A-Z), Greek (α-ω), Numbers (0-n), or Custom
+  - Custom sequences support comma-separated values or individual characters
+  - Customizable delimiters between sequence levels
+  - Increment buttons to advance sequences (resets sub-sequences)
+  - Log button copies identifier to clipboard and logs the test
+  - Add notes before or after logging
+  - Star important log entries
+  - Toggle timestamp display (UTC, seconds, milliseconds)
+  - Keep note option to preserve notes between logs
+
 - **Number Converter Module**: Converts numbers between different number systems. Features include:
   - Convert between decimal, binary (0b), hexadecimal (0x), and octal (0o)
   - Real-time conversion as you type
