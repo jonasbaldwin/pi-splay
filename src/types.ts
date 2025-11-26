@@ -8,9 +8,9 @@ export interface TimeMark {
 
 export interface Tile {
   id: string;
-  type: 'time' | 'epoch' | 'calendar' | 'date' | 'timezone-converter' | 'map' | 'format-helper' | 'quick-notes' | 'number-converter' | 'uuid' | 'nanoid';
+  type: 'time' | 'epoch' | 'calendar' | 'date' | 'timezone-converter' | 'map' | 'format-helper' | 'quick-notes' | 'number-converter' | 'uuid' | 'nanoid' | 'test-logger';
   size: TileSize;
-  data: TimeTileData | EpochTileData | CalendarTileData | DateTileData | TimezoneConverterTileData | MapTileData | FormatHelperTileData | QuickNotesTileData | NumberConverterTileData | UUIDTileData | NanoIdTileData;
+  data: TimeTileData | EpochTileData | CalendarTileData | DateTileData | TimezoneConverterTileData | MapTileData | FormatHelperTileData | QuickNotesTileData | NumberConverterTileData | UUIDTileData | NanoIdTileData | TestLoggerTileData;
   gridPosition?: { x: number; y: number }; // Grid position for drag and drop
 }
 
@@ -96,6 +96,33 @@ export interface NanoIdTileData {
   alphabet: string; // Custom alphabet (default: standard nanoid alphabet)
   length: number; // Length of generated IDs (default: 21)
   nanoIds: NanoIdEntry[]; // List of NanoIds
+}
+
+export interface TestLogEntry {
+  id: string;
+  sequence: string;
+  notes: string;
+  timestamp: number;
+  starred?: boolean;
+}
+
+export interface TestLoggerTileData {
+  description: string;
+  primaryType: 'alphabet' | 'greek' | 'numbers';
+  secondaryType: 'alphabet' | 'greek' | 'numbers' | 'none';
+  tertiaryType: 'alphabet' | 'greek' | 'numbers' | 'none';
+  quaternaryType: 'alphabet' | 'greek' | 'numbers' | 'none';
+  primaryIndex: number;
+  secondaryIndex: number;
+  tertiaryIndex: number;
+  quaternaryIndex: number;
+  primaryDelimiter?: string;
+  secondaryDelimiter?: string;
+  tertiaryDelimiter?: string;
+  quaternaryDelimiter?: string;
+  logs: TestLogEntry[];
+  previewNote?: string;
+  keepNote?: boolean;
 }
 
 export interface Tab {

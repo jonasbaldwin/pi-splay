@@ -1,4 +1,4 @@
-import { Tile, TileSize, TimeTileData, EpochTileData, CalendarTileData, DateTileData, TimezoneConverterTileData, MapTileData, FormatHelperTileData, QuickNotesTileData, NumberConverterTileData, UUIDTileData, NanoIdTileData, TimeMark } from '../types';
+import { Tile, TileSize, TimeTileData, EpochTileData, CalendarTileData, DateTileData, TimezoneConverterTileData, MapTileData, FormatHelperTileData, QuickNotesTileData, NumberConverterTileData, UUIDTileData, NanoIdTileData, TestLoggerTileData, TimeMark } from '../types';
 import { TimeModule } from './TimeModule';
 import { EpochModule } from './EpochModule';
 import { CalendarModule } from './CalendarModule';
@@ -10,9 +10,10 @@ import { QuickNotesModule } from './QuickNotesModule';
 import { NumberConverterModule } from './NumberConverterModule';
 import { UUIDModule } from './UUIDModule';
 import { NanoIdModule } from './NanoIdModule';
+import { TestLoggerModule } from './TestLoggerModule';
 import { getThemePreference, setThemePreference, applyTheme, ThemePreference } from '../utils/theme';
 
-type ModuleInstance = TimeModule | EpochModule | CalendarModule | DateModule | TimezoneConverterModule | MapModule | FormatHelperModule | QuickNotesModule | NumberConverterModule | UUIDModule | NanoIdModule | null;
+type ModuleInstance = TimeModule | EpochModule | CalendarModule | DateModule | TimezoneConverterModule | MapModule | FormatHelperModule | QuickNotesModule | NumberConverterModule | UUIDModule | NanoIdModule | TestLoggerModule | null;
 
 export class TileManager {
   private container: HTMLElement;
@@ -447,6 +448,8 @@ export class TileManager {
         return new UUIDModule(element, tile.data as UUIDTileData);
       } else if (tile.type === 'nanoid') {
         return new NanoIdModule(element, tile.data as NanoIdTileData);
+      } else if (tile.type === 'test-logger') {
+        return new TestLoggerModule(element, tile.data as TestLoggerTileData);
       }
     } catch (err) {
       console.error(`Failed to create module for tile type ${tile.type}:`, err);

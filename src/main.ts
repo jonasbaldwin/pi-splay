@@ -180,7 +180,8 @@ function initializeAddTileModal(tileManager: TileManager): void {
     { type: 'uuid', label: 'UUID Generator', icon: '🆔', category: 'Generators' },
     { type: 'nanoid', label: 'NanoId Generator', icon: '🔑', category: 'Generators' },
     { type: 'map', label: 'World Map', icon: '🗺️', category: 'Other' },
-    { type: 'quick-notes', label: 'Quick Notes', icon: '📝', category: 'Other' }
+    { type: 'quick-notes', label: 'Quick Notes', icon: '📝', category: 'Other' },
+    { type: 'test-logger', label: 'Test Logger', icon: '🧪', category: 'Other' }
   ];
   
   // Group tiles by category
@@ -325,6 +326,20 @@ function initializeAddTileModal(tileManager: TileManager): void {
     } else if (type === 'nanoid') {
       configHtml = '<p class="config-info">NanoId generator creates unique identifiers. Customize alphabet and length, then generate NanoIds.</p>';
       selectedConfig = { alphabet: '_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', length: 21, nanoIds: [] };
+    } else if (type === 'test-logger') {
+      configHtml = '<p class="config-info">Test Logger helps track test iterations with unique sequential identifiers.</p>';
+      selectedConfig = {
+        description: '',
+        primaryType: 'alphabet',
+        secondaryType: 'none',
+        tertiaryType: 'none',
+        quaternaryType: 'none',
+        primaryIndex: 0,
+        secondaryIndex: 0,
+        tertiaryIndex: 0,
+        quaternaryIndex: 0,
+        logs: []
+      };
     }
     
     tileConfig.innerHTML = configHtml;
